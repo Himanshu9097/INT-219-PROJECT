@@ -167,7 +167,6 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
   const normalizedSpotlights = Array.isArray(spotlights)
     ? spotlights
         .filter((s) => s && (s.title || s.description || s.image))
-        .slice(0, 5)
         .map((s) => ({
           title: s.title,
           description: s.description,
@@ -184,6 +183,17 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
     });
   }
 
+  const existingUser = await User.findById(req.userId);
+  if (!existingUser) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  const mergedSpotlights = [
+    ...(existingUser.spotlights || []),
+    ...normalizedSpotlights,
+  ];
+
   const updated = await User.findByIdAndUpdate(
     req.userId,
     {
@@ -191,7 +201,7 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
       tagline,
       bio,
       skills,
-      spotlights: normalizedSpotlights,
+      spotlights: mergedSpotlights,
       profileImage,
       hourlyRate,
       category,

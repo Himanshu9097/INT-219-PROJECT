@@ -440,20 +440,6 @@
           ? [{ title: currentUser.spotlightTitle, description: currentUser.spotlightDescription, image: currentUser.spotlightImage }]
           : [];
       currentSpotlights = [...spotlights];
-      const spotlightSummary = currentSpotlights.length
-        ? `<div style="margin-top:20px;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--secondary-bg);display:grid;gap:12px;">
-            <div style="font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--accent);">HIGHLIGHTS</div>
-            <div style="display:grid;gap:12px;">
-              ${currentSpotlights.map((s) => `
-                <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;display:grid;gap:8px;">
-                  ${s.image ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.title || 'Highlight')}" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;" />` : ''}
-                  ${s.title ? `<div style="font-family:var(--font-serif);font-weight:700;">${escapeHtml(s.title)}</div>` : ''}
-                  ${s.description ? `<div style="color:var(--muted);font-size:.9rem;">${escapeHtml(s.description)}</div>` : ''}
-                </div>
-              `).join('')}
-            </div>
-          </div>`
-        : '';
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
           <div style="width:64px;height:64px;border-radius:50%;background:${currentUser.profileImage ? `url(${escapeHtml(currentUser.profileImage)}) center/cover no-repeat` : 'var(--secondary-bg)'};display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--accent);flex-shrink:0">${currentUser.profileImage ? '' : currentUser.name[0]}</div>
@@ -476,7 +462,7 @@
             ${currentUser.github ? `<a href="${escapeHtml(currentUser.github)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub</a>` : ''}
           </div>` : ''}
         ${currentUser.skills ? `<div style="margin-top:16px"><div style="font-size:.8rem;font-weight:700;color:var(--foreground);margin-bottom:8px;">SKILLS</div><div class="profile-skills">${currentUser.skills.split(',').map(s=>`<span class="skill-tag">${s.trim()}</span>`).join('')}</div></div>` : ''}
-        ${spotlightSummary}
+        <div id="spotlight-preview"></div>
         <form id="profile-edit-form" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border);display:grid;gap:16px;">
           <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:700;">Customize Public Profile</div>
           <div class="form-group">
@@ -578,6 +564,7 @@
       document.getElementById('profile-edit-form').addEventListener('submit', saveProfile);
       document.getElementById('profile-image-upload-btn').addEventListener('click', uploadAndSaveProfileImage);
       document.getElementById('add-spotlight-btn').addEventListener('click', addSpotlight);
+      renderSpotlightPreview();
       renderSpotlightList();
     }
 
@@ -711,42 +698,34 @@
       }
       list.innerHTML = currentSpotlights
         .map((s, idx) => `
-          <div style="border:1px solid var(--border);border-radius:12px;padding:14px;display:grid;gap:10px;">
+          <div style="border:1px solid var(--border);border-radius:12px;padding:12px;display:grid;gap:10px;background:#fff;">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
               <div style="font-weight:700;color:var(--foreground);">Highlight #${idx + 1}</div>
               <button type="button" class="btn btn-outline btn-sm" onclick="window.__removeSpotlight(${idx})">Remove</button>
             </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Title</label>
-              <input class="form-input" type="text" value="${escapeHtml(s.title || '')}" oninput="window.__updateSpotlight(${idx}, 'title', this.value)" placeholder="Best Concert Coverage 2025" />
+            <input class="form-input" type="text" value="${escapeHtml(s.title || '')}" oninput="window.__updateSpotlight(${idx}, 'title', this.value)" placeholder="Title" />
+            <textarea class="form-input form-textarea" rows="2" oninput="window.__updateSpotlight(${idx}, 'description', this.value)" placeholder="Short description">${escapeHtml(s.description || '')}</textarea>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('spotlight-file-${idx}').click()">Replace Image</button>
+              <input id="spotlight-file-${idx}" type="file" accept="image/*" style="display:none;" onchange="window.__uploadSpotlight(${idx})" />
+              ${s.image ? `<span style="font-size:.85rem;color:var(--muted);flex:1;">Image set</span>` : `<span style="font-size:.85rem;color:var(--muted);flex:1;">No image</span>`}
             </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Description</label>
-              <textarea class="form-input form-textarea" rows="3" oninput="window.__updateSpotlight(${idx}, 'description', this.value)" placeholder="Share what this certificate, concert, event, or product work was about">${escapeHtml(s.description || '')}</textarea>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">Highlight Image</label>
-              <input class="form-input" type="url" value="${escapeHtml(s.image || '')}" oninput="window.__updateSpotlight(${idx}, 'image', this.value)" placeholder="https://..." />
-              <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
-                <input class="form-input" id="spotlight-file-${idx}" type="file" accept="image/*" style="flex:1;" />
-                <button type="button" class="btn btn-outline btn-sm" onclick="window.__uploadSpotlight(${idx})">Upload</button>
-              </div>
-              ${s.image ? `<div style="margin-top:10px;"><img src="${escapeHtml(s.image)}" alt="Highlight ${idx + 1}" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;" /></div>` : ''}
-            </div>
+            ${s.image ? `<img src="${escapeHtml(s.image)}" alt="Highlight ${idx + 1}" style="width:100%;max-height:140px;object-fit:cover;border-radius:10px;" />` : ''}
           </div>
         `)
         .join('');
     }
 
     function addSpotlight() {
-      if (currentSpotlights.length >= 5) { success('You can add up to 5 highlights.'); return; }
       currentSpotlights.push({ title: '', description: '', image: '' });
       renderSpotlightList();
+      renderSpotlightPreview();
     }
 
     function updateSpotlight(idx, field, value) {
       if (!currentSpotlights[idx]) return;
       currentSpotlights[idx] = { ...currentSpotlights[idx], [field]: value };
+      renderSpotlightPreview();
     }
 
     async function uploadSpotlight(idx) {
@@ -763,6 +742,7 @@
         const uploaded = await uploadProfileImage(file);
         currentSpotlights[idx] = { ...currentSpotlights[idx], image: uploaded.url };
         renderSpotlightList();
+        renderSpotlightPreview();
         success('Highlight image uploaded. Save profile to apply.');
       } catch (err) {
         errEl.textContent = err.message || 'Failed to upload highlight image.';
@@ -773,12 +753,56 @@
     function removeSpotlight(idx) {
       currentSpotlights.splice(idx, 1);
       renderSpotlightList();
+      renderSpotlightPreview();
+    }
+
+    function renderSpotlightPreview() {
+      const preview = document.getElementById('spotlight-preview');
+      if (!preview) return;
+      if (!currentSpotlights.length) {
+        preview.innerHTML = '';
+        return;
+      }
+      preview.innerHTML = `
+        <div style="margin-top:20px;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--secondary-bg);display:grid;gap:12px;">
+          <div style="font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--accent);display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <span>HIGHLIGHTS</span>
+            ${currentSpotlights.length > 1 ? `<div class=\"highlight-nav\" style=\"position:static;transform:none;gap:6px;width:auto;\">
+              <button type=\"button\" class=\"highlight-btn\" onclick=\"window.__scrollHighlights('dashboard-spotlights-track', -1)\">‹</button>
+              <button type=\"button\" class=\"highlight-btn\" onclick=\"window.__scrollHighlights('dashboard-spotlights-track', 1)\">›</button>
+            </div>` : ''}
+          </div>
+          <div class=\"highlight-slider\">
+            <div class=\"highlight-track\" id=\"dashboard-spotlights-track\">
+              ${currentSpotlights.map((s) => `
+                <div class=\"highlight-card\">
+                  ${s.image ? `<img src=\"${escapeHtml(s.image)}\" alt=\"${escapeHtml(s.title || 'Highlight')}\" />` : ''}
+                  ${s.title ? `<div style=\"font-family:var(--font-serif);font-weight:700;\">${escapeHtml(s.title)}</div>` : ''}
+                  ${s.description ? `<div style=\"color:var(--muted);font-size:.9rem;\">${escapeHtml(s.description)}</div>` : ''}
+                  <button type=\"button\" class=\"btn btn-outline btn-sm\" style=\"justify-content:center;\" onclick=\"window.__removeSpotlight(${currentSpotlights.indexOf(s)})\">Remove</button>
+                </div>
+              `).join('')}
+            </div>
+            ${currentSpotlights.length > 1 ? `
+              <div class=\"highlight-nav\">
+                <button type=\"button\" class=\"highlight-btn\" onclick=\"window.__scrollHighlights('dashboard-spotlights-track', -1)\">‹</button>
+                <button type=\"button\" class=\"highlight-btn\" onclick=\"window.__scrollHighlights('dashboard-spotlights-track', 1)\">›</button>
+              </div>` : ''}
+          </div>
+        </div>`;
     }
 
     // expose helpers
     window.__updateSpotlight = updateSpotlight;
     window.__uploadSpotlight = uploadSpotlight;
     window.__removeSpotlight = removeSpotlight;
+    window.__scrollHighlights = (trackId, dir) => {
+      const track = document.getElementById(trackId);
+      if (!track) return;
+      const card = track.querySelector('.highlight-card');
+      const w = card ? card.offsetWidth + 12 : track.clientWidth;
+      track.scrollBy({ left: dir * w, behavior: 'smooth' });
+    };
 
     // ── Requests Tab ──────────────────────────────────────────
     const statusConfig = {

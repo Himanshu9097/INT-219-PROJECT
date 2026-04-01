@@ -124,6 +124,11 @@ router.put("/artworks/:id", requireAuth, async (req, res) => {
     return;
   }
 
+  if (req.userRole !== "artist") {
+    res.status(403).json({ error: "Only artists can edit artworks" });
+    return;
+  }
+
   const artwork = await Artwork.findById(id);
 
   if (!artwork) {
@@ -163,6 +168,11 @@ router.delete("/artworks/:id", requireAuth, async (req, res) => {
 
   if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     res.status(400).json({ error: "Invalid artwork ID" });
+    return;
+  }
+
+  if (req.userRole !== "artist") {
+    res.status(403).json({ error: "Only artists can delete artworks" });
     return;
   }
 
