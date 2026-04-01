@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Studio — Artfolio</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="dashboard-page" id="dashboard-page">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="dashboard-sidebar-profile">
+        <div class="sidebar-avatar" id="sidebar-avatar" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--accent)">…</div>
+        <div>
+          <div class="sidebar-name" id="sidebar-name">Loading…</div>
+          <div class="sidebar-role" id="sidebar-role">Artist</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-nav-item active" data-tab="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Overview
+        </button>
+        <button class="sidebar-nav-item" data-tab="upload" id="upload-tab-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Work
+        </button>
+        <button class="sidebar-nav-item" data-tab="myworks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          My Works
+        </button>
+        <button class="sidebar-nav-item" data-tab="community">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Browse Community
+        </button>
+        <button class="sidebar-nav-item" data-tab="requests" id="requests-tab-btn" style="position:relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Requests
+          <span id="requests-badge" style="display:none;position:absolute;top:8px;right:12px;background:#ef4444;color:#fff;font-size:.65rem;font-weight:700;border-radius:999px;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 5px;">0</span>
+        </button>
+        <button class="sidebar-nav-item" data-tab="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          My Profile
+        </button>
+        <button onclick="window.__doLogout()" class="sidebar-nav-item" style="margin-top:auto;color:#ef4444;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log Out
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+
+      <!-- Overview Tab -->
+      <div class="dashboard-tab active" id="tab-overview">
+        <div class="dashboard-greeting" id="greeting">Welcome back!</div>
+        <div class="dashboard-greeting-sub">Here's what's happening in your creative studio</div>
+        <div class="dashboard-stats">
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="stat-works">0</div>
+            <div class="dash-stat-label">Works Published</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="stat-community">0</div>
+            <div class="dash-stat-label">Community Artists</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="stat-community-works">0</div>
+            <div class="dash-stat-label">Total Works on Platform</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div class="card card-body" id="artist-only-cta" style="display:none;background:linear-gradient(135deg,var(--foreground),#2d4a8a);color:#fff;border:none;">
+            <div style="font-size:1.5rem;margin-bottom:8px">🎨</div>
+            <div style="font-family:var(--font-serif);font-size:1.15rem;font-weight:700;margin-bottom:6px;">Upload your first work</div>
+            <div style="color:rgba(255,255,255,.75);font-size:.875rem;margin-bottom:16px;">Share images, music, videos and more with the world</div>
+            <button onclick="showTab('upload')" class="btn btn-sm" style="background:var(--accent);color:#fff;border:none">Start uploading →</button>
+          </div>
+          <div class="card card-body" style="background:linear-gradient(135deg,#f0ebe3,#e8e2d9);border:none;">
+            <div style="font-size:1.5rem;margin-bottom:8px">🌐</div>
+            <div style="font-family:var(--font-serif);font-size:1.15rem;font-weight:700;margin-bottom:6px;">Explore the community</div>
+            <div style="color:var(--muted);font-size:.875rem;margin-bottom:16px;">Discover inspiring work from artists around the world</div>
+            <button onclick="showTab('community')" class="btn btn-sm btn-primary">Browse →</button>
+          </div>
+        </div>
+
+        <div style="margin-top:36px;">
+          <div style="font-family:var(--font-serif);font-size:1.2rem;font-weight:700;margin-bottom:20px;">Your recent works</div>
+          <div class="artwork-grid" id="overview-works" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+            <div class="empty-state"><div class="empty-state-icon">🎨</div><div class="empty-state-title">No works yet</div><div class="empty-state-sub">Upload your first artwork to get started</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Tab -->
+      <div class="dashboard-tab" id="tab-upload">
+        <div class="upload-form-card">
+          <div class="upload-form-title">Share Your Work</div>
+          <div class="upload-form-sub">Upload images, music, video, or any creative file — all formats welcome</div>
+
+          <div class="form-group">
+            <label class="form-label">Upload File</label>
+            <div class="upload-zone" id="upload-zone">
+              <div class="upload-zone-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="upload-zone-title">Drop your file here</div>
+              <div class="upload-zone-sub">or <span>browse to upload</span></div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:8px;">Images · Music · Video · PDF — up to 50MB</div>
+              <input type="file" id="file-input" accept="image/*,audio/*,video/*,.pdf" style="display:none" />
+            </div>
+            <div class="file-selected hidden" id="file-selected">
+              <div id="file-preview-icon" style="font-size:1.5rem"></div>
+              <div class="file-selected-name" id="file-name"></div>
+              <button class="file-selected-remove" id="file-remove">✕</button>
+            </div>
+            <div id="upload-preview-container"></div>
+            <div class="upload-progress" id="upload-progress">
+              <div class="upload-progress-bar" id="upload-bar"></div>
+            </div>
+          </div>
+
+          <form id="upload-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="work-title">Title *</label>
+              <input class="form-input" id="work-title" type="text" placeholder="Give your work a title" required />
+              <div class="form-error hidden" id="title-error"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="work-desc">Description</label>
+              <textarea class="form-input form-textarea" id="work-desc" placeholder="Tell people about this piece…" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="work-category">Category</label>
+                <select class="form-input form-select" id="work-category">
+                  <option value="">Select category</option>
+                  <option value="Illustration">Illustration</option>
+                  <option value="Digital Art">Digital Art</option>
+                  <option value="Music">Music</option>
+                  <option value="Photography">Photography</option>
+                  <option value="Event Photography">Event Photography</option>
+                  <option value="Video">Video</option>
+                  <option value="Concert">Concert</option>
+                  <option value="Live Performance">Live Performance</option>
+                  <option value="Exhibition">Exhibition</option>
+                  <option value="Stage Design">Stage Design</option>
+                  <option value="Creative Direction">Creative Direction</option>
+                  <option value="3D Art">3D Art</option>
+                  <option value="Animation">Animation</option>
+                  <option value="Graphic Design">Graphic Design</option>
+                  <option value="Writing">Writing</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="work-price">Price ($)</label>
+                <input class="form-input" id="work-price" type="number" min="0" step="0.01" placeholder="e.g. 250" />
+                <div class="form-hint">Leave blank if not for sale</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="work-project-url">Project Link</label>
+              <input class="form-input" id="work-project-url" type="url" placeholder="https://yourproject.com or a case study link" />
+              <div class="form-hint">Optional link to a live project, case study, or external portfolio page</div>
+            </div>
+            <div class="form-error hidden" id="upload-error" style="margin-bottom:16px;padding:12px;background:#fef2f2;border-radius:8px;"></div>
+            <button type="submit" class="btn btn-accent w-full btn-lg" id="upload-submit">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Publish Work
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- My Works Tab -->
+      <div class="dashboard-tab" id="tab-myworks">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+          <div>
+            <div class="section-label">Your Portfolio</div>
+            <h2 style="font-family:var(--font-serif);font-size:1.8rem;font-weight:700;">My Works</h2>
+          </div>
+          <button onclick="showTab('upload')" class="btn btn-accent btn-sm">+ Upload New</button>
+        </div>
+        <div class="artwork-grid" id="my-works-grid">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Community Tab -->
+      <div class="dashboard-tab" id="tab-community">
+        <div class="community-header">
+          <div>
+            <div class="section-label">Discover</div>
+            <h2 class="community-title">Community Works</h2>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="community-filters">
+            <button class="filter-btn active" data-type="">All</button>
+            <button class="filter-btn" data-type="image">🖼 Visual</button>
+            <button class="filter-btn" data-type="audio">🎵 Music</button>
+            <button class="filter-btn" data-type="video">🎬 Video</button>
+            <button class="filter-btn" data-type="document">📄 Documents</button>
+          </div>
+        </div>
+        <div class="community-feed" id="community-feed">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+
+        <div style="margin-top:60px;padding-top:48px;border-top:1px solid var(--border);">
+          <div class="section-label">Artists to Follow</div>
+          <h2 style="font-family:var(--font-serif);font-size:1.5rem;font-weight:700;margin-bottom:24px;">Other Artists</h2>
+          <div class="artist-grid" id="community-artists">
+            <div class="loading-wrap"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Tab -->
+      <div class="dashboard-tab" id="tab-requests">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+          <div>
+            <div class="section-label" id="requests-section-label">Incoming Requests</div>
+            <h2 style="font-family:var(--font-serif);font-size:1.8rem;font-weight:700;" id="requests-heading">Hire Requests</h2>
+          </div>
+          <div id="requests-summary-badge" style="display:none;background:#fef3c7;color:#92400e;padding:6px 14px;border-radius:999px;font-size:.8rem;font-weight:600;"></div>
+        </div>
+        <div id="requests-list">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Profile Tab -->
+      <div class="dashboard-tab" id="tab-profile">
+        <div style="margin-bottom:28px;">
+          <div class="section-label">Your Public Profile</div>
+          <h2 style="font-family:var(--font-serif);font-size:1.8rem;font-weight:700;">Profile Info</h2>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px;max-width:600px;">
+          <div id="profile-info">
+            <div class="loading-wrap"><div class="spinner"></div></div>
+          </div>
+          <a id="view-public-profile" href="#" class="btn btn-outline btn-sm" style="margin-top:20px;">View public profile →</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { renderNav } from '/js/nav.js';
+    import { getMe, getArtworks, getArtists, getArtworkById, deleteArtwork, uploadFile, createArtwork, updateArtwork, getHireRequests, updateHireStatus, updateArtistProfile, uploadProfileImage } from '/js/api.js';
+    import { requireAuth, getCachedUser, fetchCurrentUser, logout } from '/js/auth.js';
+    import { artworkCardHTML, artistCardHTML } from '/js/cards.js';
+    import { success, error as showError } from '/js/toast.js';
+
+    if (!requireAuth()) { }
+    renderNav('dashboard');
+    window.__doLogout = logout;
+
+    let currentUser = null;
+    let allArtworks = [];
+    let myWorks = [];
+    let selectedFile = null;
+    let uploadedUrl = null;
+    let uploadedMediaType = null;
+    let editingArtworkId = null;
+
+    function escapeHtml(value = '') {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function getIndiaLocalPhone(phoneNumber) {
+      const digits = String(phoneNumber || '').replace(/\D/g, '');
+      if (!digits) return '';
+      return digits.startsWith('91') && digits.length > 10 ? digits.slice(-10) : digits.slice(-10);
+    }
+
+    function whatsappLink(phoneNumber, message) {
+      const digits = String(phoneNumber || '').replace(/\D/g, '');
+      if (!digits) return '';
+      return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+    }
+
+    function renderCurrentUserChrome() {
+      if (!currentUser) return;
+
+      const name = currentUser.name;
+      document.getElementById('greeting').textContent = `Welcome back, ${name}! 👋`;
+      document.getElementById('sidebar-name').textContent = name;
+      document.getElementById('sidebar-role').textContent = currentUser.role === 'artist' ? 'Artist' : 'Client';
+
+      const avatarEl = document.getElementById('sidebar-avatar');
+      avatarEl.textContent = '';
+      avatarEl.style.backgroundImage = '';
+      avatarEl.style.backgroundSize = '';
+      avatarEl.style.backgroundPosition = '';
+
+      if (currentUser.profileImage) {
+        avatarEl.style.backgroundImage = `url(${currentUser.profileImage})`;
+        avatarEl.style.backgroundSize = 'cover';
+        avatarEl.style.backgroundPosition = 'center';
+      } else {
+        avatarEl.textContent = name[0];
+      }
+    }
+
+    // Tab switching
+    window.showTab = function(name) {
+      document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name)?.classList.add('active');
+      document.querySelector(`[data-tab="${name}"]`)?.classList.add('active');
+      if (name === 'myworks') loadMyWorks();
+      if (name === 'community') loadCommunity();
+      if (name === 'profile') loadProfileTab();
+      if (name === 'requests') loadRequests();
+    };
+
+    document.querySelectorAll('.sidebar-nav-item[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => showTab(btn.dataset.tab));
+    });
+
+    // Init
+    async function init() {
+      currentUser = getCachedUser();
+      if (!currentUser) currentUser = await fetchCurrentUser();
+      if (!currentUser) { window.location.href = '/login.html'; return; }
+
+      renderCurrentUserChrome();
+
+      if (currentUser.role === 'artist') {
+        document.getElementById('artist-only-cta').style.display = 'block';
+        document.getElementById('upload-tab-btn').style.display = 'flex';
+      } else {
+        document.getElementById('upload-tab-btn').style.display = 'none';
+      }
+
+      await loadOverview();
+      loadNotificationCount();
+    }
+
+    async function loadOverview() {
+      try {
+        const [myW, allA, allW] = await Promise.all([
+          getArtworks(currentUser.id),
+          getArtists(),
+          getArtworks()
+        ]);
+        myWorks = myW || [];
+        allArtworks = allW || [];
+        document.getElementById('stat-works').textContent = myWorks.length;
+        document.getElementById('stat-community').textContent = (allA||[]).length;
+        document.getElementById('stat-community-works').textContent = allArtworks.length;
+
+        const overviewGrid = document.getElementById('overview-works');
+        if (myWorks.length > 0) {
+          overviewGrid.innerHTML = myWorks.slice(0,4).map(a => artworkCardHTML(a)).join('');
+        }
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadMyWorks() {
+      const grid = document.getElementById('my-works-grid');
+      grid.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+      try {
+        myWorks = await getArtworks(currentUser.id) || [];
+        if (myWorks.length === 0) {
+          grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🎨</div><div class="empty-state-title">No works yet</div><div class="empty-state-sub">Upload your first artwork to build your portfolio</div><button onclick="showTab('upload')" class="btn btn-accent" style="margin-top:16px">Upload Now</button></div>`;
+        } else {
+          grid.innerHTML = myWorks.map(a => artworkCardHTML(a, true, currentUser.id)).join('');
+        }
+      } catch(e) {
+        console.error('Failed to load works', e);
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Couldn’t load works</div><div class="empty-state-sub">${escapeHtml(e.message || 'Please refresh and try again.')}</div></div>`;
+      }
+    }
+
+    let communityFilter = '';
+    async function loadCommunity() {
+      const feed = document.getElementById('community-feed');
+      const artistsEl = document.getElementById('community-artists');
+      feed.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+      try {
+        const [worksResult, artistsResult] = await Promise.allSettled([getArtworks(), getArtists()]);
+        allArtworks = worksResult.status === 'fulfilled' ? (worksResult.value || []) : [];
+        const artists = artistsResult.status === 'fulfilled' ? (artistsResult.value || []) : [];
+        const others = artists.filter(a => a.id !== currentUser.id);
+        artistsEl.innerHTML = others.slice(0,6).map(artistCardHTML).join('') || '<p class="text-muted">No other artists yet.</p>';
+        renderCommunityFeed();
+        if (worksResult.status === 'rejected') console.error('Failed to load community works', worksResult.reason);
+        if (artistsResult.status === 'rejected') {
+          console.error('Failed to load community artists', artistsResult.reason);
+          artistsEl.innerHTML = '<p class="text-muted">Failed to load artists.</p>';
+        }
+      } catch(e) {
+        console.error('Failed to load community', e);
+        feed.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Couldn’t load community</div><div class="empty-state-sub">${escapeHtml(e.message || 'Please refresh and try again.')}</div></div>`;
+      }
+    }
+
+    function renderCommunityFeed() {
+      const feed = document.getElementById('community-feed');
+      let works = allArtworks.filter(a => a.artistId !== currentUser.id);
+      if (communityFilter) works = works.filter(a => a.mediaType === communityFilter);
+      if (works.length === 0) {
+        feed.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🌐</div><div class="empty-state-title">No works found</div><div class="empty-state-sub">Be the first to upload in this category!</div></div>`;
+      } else {
+        feed.innerHTML = works.map(a => artworkCardHTML(a)).join('');
+      }
+    }
+
+    document.getElementById('community-filters').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('#community-filters .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      communityFilter = btn.dataset.type;
+      renderCommunityFeed();
+    });
+
+    async function loadProfileTab() {
+      const el = document.getElementById('profile-info');
+      if (!currentUser) return;
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:${currentUser.profileImage ? `url(${escapeHtml(currentUser.profileImage)}) center/cover no-repeat` : 'var(--secondary-bg)'};display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--accent);flex-shrink:0">${currentUser.profileImage ? '' : currentUser.name[0]}</div>
+          <div>
+            <div style="font-family:var(--font-serif);font-size:1.2rem;font-weight:700">${currentUser.name}</div>
+            <div style="color:var(--accent);font-size:.85rem;font-weight:600">${currentUser.category||currentUser.role||'Artist'}</div>
+            ${currentUser.tagline ? `<div style="color:var(--muted);font-size:.9rem;margin-top:4px">${currentUser.tagline}</div>` : ''}
+          </div>
+        </div>
+        ${currentUser.bio ? `<p style="color:var(--muted);margin-bottom:16px">${currentUser.bio}</p>` : '<p style="color:var(--muted);font-size:.875rem">No bio yet.</p>'}
+        ${currentUser.location ? `<div style="font-size:.875rem;color:var(--muted)">📍 ${currentUser.location}</div>` : ''}
+        ${currentUser.hourlyRate ? `<div style="font-size:.875rem;color:var(--muted);margin-top:4px">💰 $${currentUser.hourlyRate}/hr</div>` : ''}
+        ${currentUser.availabilityStatus ? `<div style="font-size:.875rem;color:var(--muted);margin-top:4px">🟢 Availability: ${currentUser.availabilityStatus}</div>` : ''}
+        ${(currentUser.website || currentUser.instagram || currentUser.behance || currentUser.linkedin || currentUser.github) ? `
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;">
+            ${currentUser.website ? `<a href="${escapeHtml(currentUser.website)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Website</a>` : ''}
+            ${currentUser.instagram ? `<a href="${escapeHtml(currentUser.instagram)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Instagram</a>` : ''}
+            ${currentUser.behance ? `<a href="${escapeHtml(currentUser.behance)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Behance</a>` : ''}
+            ${currentUser.linkedin ? `<a href="${escapeHtml(currentUser.linkedin)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">LinkedIn</a>` : ''}
+            ${currentUser.github ? `<a href="${escapeHtml(currentUser.github)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub</a>` : ''}
+          </div>` : ''}
+        ${currentUser.skills ? `<div style="margin-top:16px"><div style="font-size:.8rem;font-weight:700;color:var(--foreground);margin-bottom:8px;">SKILLS</div><div class="profile-skills">${currentUser.skills.split(',').map(s=>`<span class="skill-tag">${s.trim()}</span>`).join('')}</div></div>` : ''}
+        <form id="profile-edit-form" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border);display:grid;gap:16px;">
+          <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:700;">Customize Public Profile</div>
+          <div class="form-group">
+            <label class="form-label" for="profile-image-file-input">Profile Image Upload</label>
+            <input class="form-input" id="profile-image-file-input" type="file" accept="image/*" />
+            <button type="button" class="btn btn-outline btn-sm" id="profile-image-upload-btn" style="margin-top:12px;">Upload</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-name-input">Display Name</label>
+            <input class="form-input" id="profile-name-input" type="text" value="${escapeHtml(currentUser.name || '')}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-tagline-input">Tagline</label>
+            <input class="form-input" id="profile-tagline-input" type="text" placeholder="Illustrator crafting bold editorial worlds" value="${escapeHtml(currentUser.tagline || '')}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-bio-input">Bio</label>
+            <textarea class="form-input form-textarea" id="profile-bio-input" rows="4" placeholder="Tell clients what you do and what makes your work unique">${escapeHtml(currentUser.bio || '')}</textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="profile-category-input">Category</label>
+              <input class="form-input" id="profile-category-input" type="text" value="${escapeHtml(currentUser.category || '')}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-location-input">Location</label>
+              <input class="form-input" id="profile-location-input" type="text" value="${escapeHtml(currentUser.location || '')}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-phone-input">Phone Number</label>
+            <div style="display:grid;grid-template-columns:88px 1fr;gap:10px;">
+              <input class="form-input" type="text" value="+91" disabled />
+              <input class="form-input" id="profile-phone-input" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" placeholder="9876543210" value="${escapeHtml(getIndiaLocalPhone(currentUser.phoneNumber))}" />
+            </div>
+            <div class="form-hint">Enter your 10 digit mobile number</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="profile-rate-input">Hourly Rate</label>
+              <input class="form-input" id="profile-rate-input" type="number" min="0" step="1" value="${currentUser.hourlyRate || ''}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-availability-input">Availability</label>
+              <select class="form-input form-select" id="profile-availability-input">
+                <option value="available" ${currentUser.availabilityStatus === 'available' ? 'selected' : ''}>Available</option>
+                <option value="limited" ${currentUser.availabilityStatus === 'limited' ? 'selected' : ''}>Limited</option>
+                <option value="booked" ${currentUser.availabilityStatus === 'booked' ? 'selected' : ''}>Booked</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-skills-input">Skills</label>
+            <input class="form-input" id="profile-skills-input" type="text" placeholder="Branding, Illustration, Motion Design" value="${escapeHtml(currentUser.skills || '')}" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="profile-website-input">Website</label>
+              <input class="form-input" id="profile-website-input" type="url" placeholder="https://yourportfolio.com" value="${escapeHtml(currentUser.website || '')}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-image-input">Profile Image URL</label>
+              <input class="form-input" id="profile-image-input" type="url" placeholder="https://..." value="${escapeHtml(currentUser.profileImage || '')}" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="profile-instagram-input">Instagram</label>
+              <input class="form-input" id="profile-instagram-input" type="url" placeholder="https://instagram.com/..." value="${escapeHtml(currentUser.instagram || '')}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-behance-input">Behance</label>
+              <input class="form-input" id="profile-behance-input" type="url" placeholder="https://behance.net/..." value="${escapeHtml(currentUser.behance || '')}" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="profile-linkedin-input">LinkedIn</label>
+              <input class="form-input" id="profile-linkedin-input" type="url" placeholder="https://linkedin.com/in/..." value="${escapeHtml(currentUser.linkedin || '')}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-github-input">GitHub</label>
+              <input class="form-input" id="profile-github-input" type="url" placeholder="https://github.com/..." value="${escapeHtml(currentUser.github || '')}" />
+            </div>
+          </div>
+          <div class="form-error hidden" id="profile-save-error" style="padding:12px;background:#fef2f2;border-radius:8px;"></div>
+          <button type="submit" class="btn btn-accent">Save Profile</button>
+        </form>
+      `;
+      document.getElementById('view-public-profile').href = `/profile.html?id=${currentUser.id}`;
+
+      document.getElementById('profile-edit-form').addEventListener('submit', saveProfile);
+      document.getElementById('profile-image-upload-btn').addEventListener('click', uploadAndSaveProfileImage);
+    }
+
+    async function saveProfile(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('profile-save-error');
+      errEl.classList.add('hidden');
+
+      const payload = {
+        name: document.getElementById('profile-name-input').value.trim(),
+        tagline: document.getElementById('profile-tagline-input').value.trim() || undefined,
+        bio: document.getElementById('profile-bio-input').value.trim() || undefined,
+        category: document.getElementById('profile-category-input').value.trim() || undefined,
+        location: document.getElementById('profile-location-input').value.trim() || undefined,
+        phoneNumber: undefined,
+        hourlyRate: document.getElementById('profile-rate-input').value ? Number(document.getElementById('profile-rate-input').value) : undefined,
+        availabilityStatus: document.getElementById('profile-availability-input').value,
+        skills: document.getElementById('profile-skills-input').value.trim() || undefined,
+        website: document.getElementById('profile-website-input').value.trim() || undefined,
+        profileImage: document.getElementById('profile-image-input').value.trim() || undefined,
+        instagram: document.getElementById('profile-instagram-input').value.trim() || undefined,
+        behance: document.getElementById('profile-behance-input').value.trim() || undefined,
+        linkedin: document.getElementById('profile-linkedin-input').value.trim() || undefined,
+        github: document.getElementById('profile-github-input').value.trim() || undefined,
+      };
+
+      const phoneDigits = document.getElementById('profile-phone-input').value.replace(/\D/g, '');
+      if (phoneDigits) {
+        if (phoneDigits.length !== 10) {
+          errEl.textContent = 'Phone number must be exactly 10 digits.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        payload.phoneNumber = `91${phoneDigits}`;
+      }
+
+      if (!payload.name) {
+        errEl.textContent = 'Display name is required.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        currentUser = await updateArtistProfile(payload);
+        localStorage.setItem('artfolio_user', JSON.stringify(currentUser));
+        renderCurrentUserChrome();
+        success('Profile updated successfully.');
+        await loadProfileTab();
+      } catch (err) {
+        errEl.textContent = err.message || 'Failed to save profile.';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    async function uploadAndSaveProfileImage() {
+      const errEl = document.getElementById('profile-save-error');
+      const fileInput = document.getElementById('profile-image-file-input');
+      const uploadBtn = document.getElementById('profile-image-upload-btn');
+      const file = fileInput.files?.[0];
+
+      errEl.classList.add('hidden');
+
+      if (!file) {
+        errEl.textContent = 'Please choose an image file first.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = 'Uploading...';
+
+      try {
+        const uploaded = await uploadProfileImage(file);
+        const profileImageInput = document.getElementById('profile-image-input');
+        if (profileImageInput) {
+          profileImageInput.value = uploaded.url;
+        }
+
+        await updateArtistProfile({
+          name: currentUser.name,
+          tagline: currentUser.tagline,
+          bio: currentUser.bio,
+          category: currentUser.category,
+          location: currentUser.location,
+          phoneNumber: currentUser.phoneNumber,
+          hourlyRate: currentUser.hourlyRate,
+          availabilityStatus: currentUser.availabilityStatus || 'available',
+          skills: currentUser.skills,
+          website: currentUser.website,
+          instagram: currentUser.instagram,
+          behance: currentUser.behance,
+          linkedin: currentUser.linkedin,
+          github: currentUser.github,
+          profileImage: uploaded.url,
+        });
+
+        currentUser = await fetchCurrentUser();
+        if (!currentUser) {
+          throw new Error('Profile was uploaded, but refreshing the updated user failed.');
+        }
+
+        localStorage.setItem('artfolio_user', JSON.stringify(currentUser));
+        renderCurrentUserChrome();
+        success('Profile image updated.');
+        await loadProfileTab();
+      } catch (err) {
+        errEl.textContent = err.message || 'Failed to upload profile image.';
+        errEl.classList.remove('hidden');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Upload';
+      }
+    }
+
+    // ── Requests Tab ──────────────────────────────────────────
+    const statusConfig = {
+      pending:   { label: 'Pending',   bg: '#fef3c7', color: '#92400e' },
+      accepted:  { label: 'Accepted',  bg: '#d1fae5', color: '#065f46' },
+      declined:  { label: 'Declined',  bg: '#fee2e2', color: '#991b1b' },
+      completed: { label: 'Completed', bg: '#dbeafe', color: '#1e40af' },
+    };
+
+    function requestCardHTML(r, isArtist) {
+      const sc = statusConfig[r.status] || statusConfig.pending;
+      const otherName = isArtist ? r.clientName : r.artistName;
+      const deadline = r.deadline ? new Date(r.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Flexible';
+      const budget = r.budget ? `$${r.budget.toLocaleString()}` : 'Open to offers';
+      const date = new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      const actions = (isArtist && r.status === 'pending') ? `
+        <div style="display:flex;gap:10px;margin-top:20px;">
+          <button onclick="window.__acceptRequest('${r.id}')" class="btn btn-accent btn-sm" style="flex:1;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Accept
+          </button>
+          <button onclick="window.__declineRequest('${r.id}')" class="btn btn-outline btn-sm" style="flex:1;justify-content:center;color:#ef4444;border-color:#ef4444;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Decline
+          </button>
+        </div>` : '';
+
+      const markDone = (!isArtist && r.status === 'accepted') ? `
+        <div style="margin-top:16px;">
+          <button onclick="window.__markComplete('${r.id}')" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;">
+            Mark as Completed
+          </button>
+        </div>` : '';
+
+      const email = isArtist ? r.clientEmail : r.artistEmail;
+      const phoneNumber = isArtist ? r.clientPhoneNumber : r.artistPhoneNumber;
+      const contactActions = `
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+          ${email ? `<a href="mailto:${email}?subject=${encodeURIComponent(`Regarding: ${r.title}`)}" class="btn btn-outline btn-sm">Email</a>` : ''}
+          ${phoneNumber ? `<a href="${whatsappLink(phoneNumber, `Hi, I want to discuss the project "${r.title}".`)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">WhatsApp</a>` : ''}
+        </div>`;
+
+      return `
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;transition:box-shadow .2s;" onmouseenter="this.style.boxShadow='0 4px 24px rgba(0,0,0,.08)'" onmouseleave="this.style.boxShadow='none'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+                <span style="font-family:var(--font-serif);font-size:1.05rem;font-weight:700;">${r.title}</span>
+                <span style="background:${sc.bg};color:${sc.color};font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;">${sc.label}</span>
+              </div>
+              <div style="font-size:.83rem;color:var(--muted);margin-bottom:12px;">
+                ${isArtist ? 'From' : 'To'} <strong style="color:var(--text)">${otherName || 'Unknown'}</strong> · ${date}
+              </div>
+              <p style="font-size:.88rem;color:var(--muted);line-height:1.55;margin-bottom:0;">${r.description.length > 180 ? r.description.slice(0,180)+'…' : r.description}</p>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:var(--font-serif);font-size:1.4rem;font-weight:700;color:var(--accent);">${budget}</div>
+              <div style="font-size:.78rem;color:var(--muted);">📅 ${deadline}</div>
+            </div>
+          </div>
+          ${contactActions}${actions}${markDone}
+        </div>`;
+    }
+
+    async function loadRequests() {
+      const list = document.getElementById('requests-list');
+      list.innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+      const isArtist = currentUser?.role === 'artist';
+
+      document.getElementById('requests-section-label').textContent = isArtist ? 'Incoming Offers' : 'My Sent Offers';
+      document.getElementById('requests-heading').textContent = isArtist ? 'Hire Requests' : 'My Requests';
+
+      try {
+        const reqs = await getHireRequests();
+        updateNotificationBadge(reqs);
+
+        const summaryBadge = document.getElementById('requests-summary-badge');
+        if (reqs.length > 0) {
+          const pending = reqs.filter(r => r.status === 'pending').length;
+          summaryBadge.style.display = 'block';
+          summaryBadge.textContent = pending > 0
+            ? `${pending} pending · ${reqs.length} total`
+            : `${reqs.length} total`;
+        } else {
+          summaryBadge.style.display = 'none';
+        }
+
+        if (reqs.length === 0) {
+          list.innerHTML = `<div class="empty-state">
+            <div class="empty-state-icon">${isArtist ? '📬' : '🤝'}</div>
+            <div class="empty-state-title">${isArtist ? 'No hire requests yet' : 'No requests sent yet'}</div>
+            <div class="empty-state-sub">${isArtist ? 'When clients send you offers, they will appear here.' : 'Browse artists and send your first hire request.'}</div>
+            ${!isArtist ? '<a href="/browse.html" class="btn btn-accent" style="margin-top:16px">Browse Artists</a>' : ''}
+          </div>`;
+        } else {
+          list.innerHTML = reqs.map(r => requestCardHTML(r, isArtist)).join('');
+        }
+      } catch(e) {
+        list.innerHTML = '<p class="text-muted text-center">Failed to load requests.</p>';
+      }
+    }
+
+    function updateNotificationBadge(reqs) {
+      if (!currentUser || currentUser.role !== 'artist') return;
+      const pending = (reqs || []).filter(r => r.status === 'pending').length;
+      const badge = document.getElementById('requests-badge');
+      if (pending > 0) {
+        badge.textContent = pending > 99 ? '99+' : pending;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    async function loadNotificationCount() {
+      if (!currentUser || currentUser.role !== 'artist') return;
+      try {
+        const reqs = await getHireRequests();
+        updateNotificationBadge(reqs);
+      } catch {}
+    }
+
+    window.__acceptRequest = async (id) => {
+      try {
+        await updateHireStatus(id, 'accepted');
+        success('Request accepted! 🎉');
+        loadRequests();
+      } catch(e) { showError(e.message || 'Failed to update'); }
+    };
+    window.__declineRequest = async (id) => {
+      if (!confirm('Decline this hire request?')) return;
+      try {
+        await updateHireStatus(id, 'declined');
+        success('Request declined.');
+        loadRequests();
+      } catch(e) { showError(e.message || 'Failed to update'); }
+    };
+    window.__markComplete = async (id) => {
+      try {
+        await updateHireStatus(id, 'completed');
+        success('Marked as completed! ✅');
+        loadRequests();
+      } catch(e) { showError(e.message || 'Failed to update'); }
+    };
+
+    // ── File upload logic ────────────────────────────────────
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileSelectedEl = document.getElementById('file-selected');
+    const fileNameEl = document.getElementById('file-name');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const f = e.dataTransfer.files[0];
+      if (f) selectFile(f);
+    });
+    fileInput.addEventListener('change', () => { if (fileInput.files[0]) selectFile(fileInput.files[0]); });
+    document.getElementById('file-remove').addEventListener('click', clearFile);
+
+    const icons = { image: '🖼', audio: '🎵', video: '🎬', application: '📄' };
+    function selectFile(f) {
+      selectedFile = f;
+      uploadedUrl = null;
+      uploadedMediaType = null;
+      const type = f.type.split('/')[0];
+      const icon = icons[type] || '📁';
+      document.getElementById('file-preview-icon').textContent = icon;
+      fileNameEl.textContent = f.name + ' (' + (f.size / 1024 / 1024).toFixed(1) + ' MB)';
+      fileSelectedEl.classList.remove('hidden');
+
+      const preview = document.getElementById('upload-preview-container');
+      if (type === 'image') {
+        const url = URL.createObjectURL(f);
+        preview.innerHTML = `<div class="upload-preview"><img src="${url}" style="max-height:200px;width:100%;object-fit:contain;"></div>`;
+      } else if (type === 'audio') {
+        const url = URL.createObjectURL(f);
+        preview.innerHTML = `<div class="upload-preview"><audio controls style="width:100%;padding:16px"><source src="${url}"></audio></div>`;
+      } else if (type === 'video') {
+        const url = URL.createObjectURL(f);
+        preview.innerHTML = `<div class="upload-preview"><video controls style="width:100%;max-height:200px"><source src="${url}"></video></div>`;
+      } else {
+        preview.innerHTML = '';
+      }
+      // Auto-fill category
+      const catMap = { image: 'Digital Art', audio: 'Music', video: 'Video', application: 'Writing' };
+      const cat = document.getElementById('work-category');
+      if (!cat.value && catMap[type]) cat.value = catMap[type];
+    }
+
+    function clearFile() {
+      selectedFile = null; uploadedUrl = null; uploadedMediaType = null;
+      fileInput.value = '';
+      fileSelectedEl.classList.add('hidden');
+      document.getElementById('upload-preview-container').innerHTML = '';
+    }
+
+    function resetUploadForm() {
+      editingArtworkId = null;
+      document.getElementById('upload-form').reset();
+      document.getElementById('upload-submit').textContent = 'Publish Work';
+      document.querySelector('.upload-form-title').textContent = 'Share Your Work';
+      document.querySelector('.upload-form-sub').textContent = 'Upload images, music, video, or any creative file — all formats welcome';
+      document.getElementById('upload-progress').style.display = 'none';
+      document.getElementById('upload-bar').style.width = '0%';
+      clearFile();
+    }
+
+    // Upload form submit
+    document.getElementById('upload-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('work-title').value.trim();
+      const titleErr = document.getElementById('title-error');
+      const uploadErr = document.getElementById('upload-error');
+      const submitBtn = document.getElementById('upload-submit');
+
+      if (!title) { titleErr.textContent = 'Title is required'; titleErr.classList.remove('hidden'); return; }
+      titleErr.classList.add('hidden');
+      if (!editingArtworkId && !selectedFile && !uploadedUrl) { uploadErr.textContent = 'Please select a file to upload'; uploadErr.classList.remove('hidden'); return; }
+      uploadErr.classList.add('hidden');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = editingArtworkId ? 'Saving…' : 'Uploading…';
+
+      try {
+        // Step 1: Upload file if not already uploaded
+        if (!editingArtworkId && !uploadedUrl) {
+          const progress = document.getElementById('upload-progress');
+          const bar = document.getElementById('upload-bar');
+          progress.style.display = 'block';
+          const result = await uploadFile(selectedFile, pct => { bar.style.width = pct + '%'; });
+          uploadedUrl = result.url;
+          uploadedMediaType = result.mediaType;
+          bar.style.width = '100%';
+        }
+
+        // Step 2: Create artwork record
+        const desc = document.getElementById('work-desc').value.trim();
+        const category = document.getElementById('work-category').value;
+        const price = document.getElementById('work-price').value;
+        const projectUrl = document.getElementById('work-project-url')?.value.trim();
+        const payload = {
+          title,
+          description: desc || undefined,
+          imageUrl: uploadedUrl || undefined,
+          projectUrl: projectUrl || undefined,
+          mediaType: uploadedMediaType || 'image',
+          category: category || undefined,
+          price: price ? parseFloat(price) : undefined,
+        };
+
+        if (editingArtworkId) {
+          const existingArtwork = myWorks.find(a => a.id === editingArtworkId);
+          await updateArtwork(editingArtworkId, {
+            ...payload,
+            imageUrl: payload.imageUrl || existingArtwork?.imageUrl,
+            mediaType: payload.imageUrl ? payload.mediaType : existingArtwork?.mediaType,
+          });
+          success('Work updated successfully.');
+        } else {
+          await createArtwork(payload);
+          success('Work published! 🎉');
+        }
+
+        resetUploadForm();
+        await loadOverview();
+        showTab('myworks');
+        await loadMyWorks();
+      } catch(err) {
+        uploadErr.textContent = err.message || 'Upload failed. Please try again.';
+        uploadErr.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = editingArtworkId ? 'Save Changes' : 'Publish Work';
+      }
+    });
+
+    window.__editArtwork = async (id) => {
+      const artwork = myWorks.find(a => a.id === id) || await getArtworkById(id);
+      if (!artwork) {
+        showError('Artwork not found.');
+        return;
+      }
+
+      editingArtworkId = artwork.id;
+      uploadedUrl = artwork.imageUrl || null;
+      uploadedMediaType = artwork.mediaType || null;
+      selectedFile = null;
+
+      document.getElementById('work-title').value = artwork.title || '';
+      document.getElementById('work-desc').value = artwork.description || '';
+      document.getElementById('work-category').value = artwork.category || '';
+      document.getElementById('work-price').value = artwork.price || '';
+      document.getElementById('work-project-url').value = artwork.projectUrl || '';
+      document.getElementById('upload-submit').textContent = 'Save Changes';
+      document.querySelector('.upload-form-title').textContent = 'Edit Your Work';
+      document.querySelector('.upload-form-sub').textContent = 'Update the title, description, category, price, or project link for this showcase item.';
+      document.getElementById('upload-progress').style.display = 'none';
+      document.getElementById('upload-bar').style.width = '0%';
+
+      const preview = document.getElementById('upload-preview-container');
+      preview.innerHTML = artwork.imageUrl
+        ? `<div class="upload-preview"><img src="${artwork.imageUrl}" style="max-height:200px;width:100%;object-fit:contain;"></div>`
+        : '';
+      fileSelectedEl.classList.add('hidden');
+      showTab('upload');
+    };
+
+    // Delete artwork
+    window.__deleteArtwork = async (id) => {
+      if (!confirm('Delete this work? This cannot be undone.')) return;
+      try {
+        await deleteArtwork(id);
+        success('Work deleted');
+        loadMyWorks();
+        await loadOverview();
+      } catch(e) { showError(e.message || 'Failed to delete'); }
+    };
+
+    init();
+  </script>
+</body>
+</html>

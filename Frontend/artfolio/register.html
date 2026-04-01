@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Artfolio</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Join the Artfolio creative community</p>
+
+      <div class="role-picker">
+        <div class="role-option active" data-role="artist" id="role-artist">
+          <div class="role-option-icon">🎨</div>
+          <div class="role-option-title">I'm an Artist</div>
+          <div class="role-option-desc">Showcase and sell your work</div>
+        </div>
+        <div class="role-option" data-role="client" id="role-client">
+          <div class="role-option-icon">💼</div>
+          <div class="role-option-title">I'm a Client</div>
+          <div class="role-option-desc">Hire talented artists</div>
+        </div>
+      </div>
+      <input type="hidden" id="selected-role" value="artist" />
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="name">Full name</label>
+          <input class="form-input" id="name" type="text" placeholder="Your name" required autocomplete="name" />
+          <div class="form-error hidden" id="name-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input class="form-input" id="email" type="email" placeholder="you@example.com" required autocomplete="email" />
+          <div class="form-error hidden" id="email-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" id="password" type="password" placeholder="At least 8 characters" required autocomplete="new-password" />
+          <div class="form-hint">Minimum 6 characters</div>
+          <div class="form-error hidden" id="pw-error"></div>
+        </div>
+        <div class="form-error hidden" id="form-error" style="margin-bottom:16px;padding:12px;background:#fef2f2;border-radius:8px;"></div>
+        <button type="submit" class="btn btn-primary w-full" id="submit-btn">Create account</button>
+      </form>
+
+      <div class="auth-footer">Already have an account? <a href="/login.html">Sign in</a></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { renderNav } from '/js/nav.js';
+    import { register } from '/js/api.js';
+    import { setToken, requireGuest } from '/js/auth.js';
+    import { success } from '/js/toast.js';
+
+    renderNav();
+    requireGuest();
+
+    // Role picker
+    document.querySelectorAll('.role-option').forEach(el => {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.role-option').forEach(r => r.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('selected-role').value = el.dataset.role;
+      });
+    });
+
+    const form = document.getElementById('register-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const formErr = document.getElementById('form-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('selected-role').value;
+      let valid = true;
+
+      if (!name) { document.getElementById('name-error').textContent = 'Name is required'; document.getElementById('name-error').classList.remove('hidden'); valid = false; } else document.getElementById('name-error').classList.add('hidden');
+      if (!email) { document.getElementById('email-error').textContent = 'Email is required'; document.getElementById('email-error').classList.remove('hidden'); valid = false; } else document.getElementById('email-error').classList.add('hidden');
+      if (!password || password.length < 6) { document.getElementById('pw-error').textContent = 'Password must be at least 6 characters'; document.getElementById('pw-error').classList.remove('hidden'); valid = false; } else document.getElementById('pw-error').classList.add('hidden');
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account…';
+      formErr.classList.add('hidden');
+
+      try {
+        const res = await register(name, email, password, role);
+        setToken(res.token);
+        success('Account created! Welcome to Artfolio 🎉');
+        setTimeout(() => { window.location.href = '/dashboard.html'; }, 600);
+      } catch (err) {
+        formErr.textContent = err.message || 'Failed to create account. Try again.';
+        formErr.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create account';
+      }
+    });
+  </script>
+</body>
+</html>

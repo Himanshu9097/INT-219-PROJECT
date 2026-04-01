@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Artists — Artfolio</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div style="padding-top:var(--nav-h);">
+    <!-- Browse Hero -->
+    <section class="browse-hero" style="margin-top:0;padding-top:80px;">
+      <div class="container">
+        <h1 class="browse-hero-title">Discover Creative Talent</h1>
+        <p class="browse-hero-sub">Browse thousands of original works from artists across all disciplines</p>
+        <div class="search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="search-input" type="text" placeholder="Search artists, styles, categories…" />
+          <button class="btn btn-accent btn-sm">Search</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="container" style="padding-top:48px;padding-bottom:80px;">
+      <!-- Filter Bar -->
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Works</button>
+        <button class="filter-btn" data-filter="image">🖼 Visual Art</button>
+        <button class="filter-btn" data-filter="audio">🎵 Music</button>
+        <button class="filter-btn" data-filter="video">🎬 Video</button>
+        <button class="filter-btn" data-filter="document">📄 Documents</button>
+      </div>
+
+      <!-- Artworks Grid -->
+      <div style="margin-bottom:64px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+          <h2 style="font-family:var(--font-serif);font-size:1.5rem;font-weight:700;">All Works</h2>
+          <span id="works-count" style="color:var(--muted);font-size:.9rem;"></span>
+        </div>
+        <div class="artwork-grid" id="artworks-grid">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Artists Section -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+          <div>
+            <div class="section-label">The Talent</div>
+            <h2 style="font-family:var(--font-serif);font-size:1.5rem;font-weight:700;">Our Artists</h2>
+          </div>
+        </div>
+        <div class="artist-grid" id="artists-grid">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom"><span>© 2026 Artfolio</span><a href="/index.html" style="color:rgba(255,255,255,.7)">← Back to Home</a></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { renderNav } from '/js/nav.js';
+    import { getArtworks, getArtists } from '/js/api.js';
+    import { artworkCardHTML, artistCardHTML } from '/js/cards.js';
+
+    renderNav('browse');
+
+    let allWorks = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('type')) currentFilter = params.get('type');
+
+    async function load() {
+      try {
+        const [works, artists] = await Promise.all([getArtworks(), getArtists()]);
+        allWorks = works || [];
+        document.getElementById('artists-grid').innerHTML = (artists||[]).map(artistCardHTML).join('') || '<p class="text-muted text-center">No artists yet.</p>';
+
+        // Set active filter
+        if (currentFilter !== 'all') {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          document.querySelector(`[data-filter="${currentFilter}"]`)?.classList.add('active');
+        }
+        renderWorks();
+      } catch(e) {
+        document.getElementById('artworks-grid').innerHTML = '<p class="text-muted text-center">Failed to load. Please refresh.</p>';
+      }
+    }
+
+    function renderWorks() {
+      let filtered = allWorks;
+      if (currentFilter !== 'all') filtered = filtered.filter(w => w.mediaType === currentFilter);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(w => w.title.toLowerCase().includes(q) || (w.artistName||'').toLowerCase().includes(q) || (w.category||'').toLowerCase().includes(q));
+      }
+      document.getElementById('works-count').textContent = `${filtered.length} work${filtered.length !== 1 ? 's' : ''}`;
+      document.getElementById('artworks-grid').innerHTML = filtered.length
+        ? filtered.map(w => artworkCardHTML(w)).join('')
+        : '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No works found</div><div class="empty-state-sub">Try a different filter or search</div></div>';
+    }
+
+    document.getElementById('filter-bar').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderWorks();
+    });
+
+    let searchTimer;
+    document.getElementById('search-input').addEventListener('input', e => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { searchQuery = e.target.value.trim(); renderWorks(); }, 250);
+    });
+
+    load();
+  </script>
+</body>
+</html>

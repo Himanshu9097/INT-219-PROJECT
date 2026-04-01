@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artist Profile — Artfolio</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="profile-page" id="profile-page">
+    <div class="loading-wrap" id="loading"><div class="spinner"></div></div>
+    <div id="profile-content" style="display:none;">
+      <div class="profile-cover" id="profile-cover"></div>
+      <div class="profile-header">
+        <div class="profile-header-inner">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:var(--accent);background:var(--secondary-bg);"></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+              <h1 class="profile-name" id="profile-name"></h1>
+              <div class="profile-category" id="profile-category"></div>
+              <div id="profile-tagline" style="font-size:1rem;color:var(--foreground);font-weight:600;margin-bottom:12px;display:none;"></div>
+              <p class="profile-bio" id="profile-bio"></p>
+              <div class="profile-meta" id="profile-meta"></div>
+              <div class="profile-skills" id="profile-skills"></div>
+              <div id="profile-links" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;"></div>
+            </div>
+            <div class="profile-actions">
+              <a href="/browse.html" class="btn btn-outline">Browse Artists</a>
+              <button class="btn btn-accent" id="hire-btn" style="display:none;">Hire Me</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+          <div>
+            <div class="section-label">Portfolio</div>
+            <h2 style="font-family:var(--font-serif);font-size:1.8rem;font-weight:700;">Works</h2>
+          </div>
+          <span id="works-count" style="color:var(--muted);font-size:.9rem;"></span>
+        </div>
+
+        <div class="filter-bar" id="type-filters">
+          <button class="filter-btn active" data-type="">All</button>
+          <button class="filter-btn" data-type="image">🖼 Visual</button>
+          <button class="filter-btn" data-type="audio">🎵 Music</button>
+          <button class="filter-btn" data-type="video">🎬 Video</button>
+          <button class="filter-btn" data-type="document">📄 Documents</button>
+        </div>
+
+        <div class="artwork-grid" id="works-grid">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="not-found" style="display:none;" class="empty-state" style="padding:120px 24px;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">Artist not found</div>
+      <div class="empty-state-sub">This profile doesn't exist or has been removed.</div>
+      <a href="/browse.html" class="btn btn-primary" style="margin-top:24px;">Browse Artists</a>
+    </div>
+  </div>
+
+  <!-- Hire Modal -->
+  <div class="modal-overlay" id="hire-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Hire <span id="hire-artist-name"></span></div>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <form id="hire-form">
+        <div class="form-group">
+          <label class="form-label">Your project details</label>
+          <textarea class="form-input form-textarea" id="hire-message" placeholder="Describe what you need…" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Budget ($)</label>
+          <input class="form-input" id="hire-budget" type="number" min="0" placeholder="e.g. 500" />
+        </div>
+        <div class="form-error hidden" id="hire-error" style="margin-bottom:16px;padding:12px;background:#fef2f2;border-radius:8px;"></div>
+        <button type="submit" class="btn btn-accent w-full">Send Request</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { renderNav } from '/js/nav.js';
+    import { getArtistById, getArtworks, sendHireRequest } from '/js/api.js';
+    import { isLoggedIn, fetchCurrentUser } from '/js/auth.js';
+    import { artworkCardHTML } from '/js/cards.js';
+    import { success, error as showError } from '/js/toast.js';
+
+    renderNav();
+
+    const params = new URLSearchParams(window.location.search);
+    const artistId = params.get('id');
+
+    let artist = null;
+    let allWorks = [];
+    let typeFilter = '';
+    let viewer = null;
+
+    function whatsappLink(phoneNumber, message) {
+      const digits = String(phoneNumber || '').replace(/\D/g, '');
+      if (!digits) return '';
+      return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+    }
+
+    async function load() {
+      if (!artistId) { showNotFound(); return; }
+      try {
+        [artist, allWorks, viewer] = await Promise.all([
+          getArtistById(artistId),
+          getArtworks(artistId),
+          isLoggedIn() ? fetchCurrentUser() : Promise.resolve(null),
+        ]);
+        renderProfile();
+      } catch(e) { showNotFound(); }
+    }
+
+    function showNotFound() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('not-found').style.display = 'block';
+    }
+
+    function renderProfile() {
+      document.title = `${artist.name} — Artfolio`;
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('profile-content').style.display = 'block';
+
+      const nameEl = document.getElementById('profile-name');
+      nameEl.textContent = artist.name;
+      document.getElementById('profile-category').textContent = artist.category || 'Artist';
+      const taglineEl = document.getElementById('profile-tagline');
+      if (artist.tagline) {
+        taglineEl.textContent = artist.tagline;
+        taglineEl.style.display = 'block';
+      } else {
+        taglineEl.style.display = 'none';
+      }
+      document.getElementById('profile-bio').textContent = artist.bio || '';
+      if (!artist.bio) document.getElementById('profile-bio').style.display = 'none';
+
+      const avatarEl = document.getElementById('profile-avatar');
+      if (artist.profileImage) {
+        avatarEl.style.backgroundImage = `url(${artist.profileImage})`;
+        avatarEl.style.backgroundSize = 'cover';
+        avatarEl.style.backgroundPosition = 'center';
+      } else {
+        avatarEl.textContent = artist.name[0];
+      }
+
+      const meta = document.getElementById('profile-meta');
+      let metaHTML = '';
+      if (artist.location) metaHTML += `<div class="profile-meta-item">📍 ${artist.location}</div>`;
+      if (artist.hourlyRate) metaHTML += `<div class="profile-meta-item">💰 $${artist.hourlyRate}/hr</div>`;
+      if (artist.availabilityStatus) metaHTML += `<div class="profile-meta-item">🟢 ${artist.availabilityStatus}</div>`;
+      metaHTML += `<div class="profile-meta-item">🖼 ${allWorks.length} work${allWorks.length !== 1 ? 's' : ''}</div>`;
+      meta.innerHTML = metaHTML;
+
+      if (artist.skills) {
+        const skillsEl = document.getElementById('profile-skills');
+        skillsEl.innerHTML = artist.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('');
+      }
+
+      const linksEl = document.getElementById('profile-links');
+      const canContact = viewer && viewer.id !== artist.id;
+      const links = [
+        canContact && artist.email ? `<a href="mailto:${artist.email}?subject=${encodeURIComponent(`Project inquiry for ${artist.name}`)}&body=${encodeURIComponent(`Hi ${artist.name}, I would like to discuss a project with you.`)}" class="btn btn-outline btn-sm">Email</a>` : '',
+        canContact && artist.phoneNumber ? `<a href="${whatsappLink(artist.phoneNumber, `Hi ${artist.name}, I would like to discuss a project with you.`)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">WhatsApp</a>` : '',
+        artist.website ? `<a href="${artist.website}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Website</a>` : '',
+        artist.instagram ? `<a href="${artist.instagram}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Instagram</a>` : '',
+        artist.behance ? `<a href="${artist.behance}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">Behance</a>` : '',
+        artist.linkedin ? `<a href="${artist.linkedin}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">LinkedIn</a>` : '',
+        artist.github ? `<a href="${artist.github}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub</a>` : '',
+      ].filter(Boolean);
+      linksEl.innerHTML = links.join('');
+      if (!links.length) linksEl.style.display = 'none';
+
+      // Hire button
+      if (viewer && viewer.id !== artist.id) {
+        document.getElementById('hire-btn').style.display = 'inline-flex';
+      }
+
+      document.getElementById('works-count').textContent = `${allWorks.length} work${allWorks.length !== 1 ? 's' : ''}`;
+      renderWorks();
+    }
+
+    function renderWorks() {
+      const grid = document.getElementById('works-grid');
+      let filtered = allWorks;
+      if (typeFilter) filtered = filtered.filter(w => w.mediaType === typeFilter);
+      grid.innerHTML = filtered.length
+        ? filtered.map(w => artworkCardHTML(w)).join('')
+        : `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🎨</div><div class="empty-state-title">No works in this category</div></div>`;
+    }
+
+    document.getElementById('type-filters').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('#type-filters .filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      typeFilter = btn.dataset.type;
+      renderWorks();
+    });
+
+    // Hire modal
+    const hireModal = document.getElementById('hire-modal');
+    document.getElementById('hire-btn').addEventListener('click', () => {
+      if (!isLoggedIn()) { window.location.href = '/login.html'; return; }
+      document.getElementById('hire-artist-name').textContent = artist?.name || '';
+      hireModal.classList.add('open');
+    });
+    document.getElementById('modal-close').addEventListener('click', () => hireModal.classList.remove('open'));
+    hireModal.addEventListener('click', e => { if (e.target === hireModal) hireModal.classList.remove('open'); });
+
+    document.getElementById('hire-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('hire-message').value.trim();
+      const budget = document.getElementById('hire-budget').value;
+      const errEl = document.getElementById('hire-error');
+      if (!msg) { errEl.textContent = 'Please describe your project'; errEl.classList.remove('hidden'); return; }
+      errEl.classList.add('hidden');
+      try {
+        await sendHireRequest(artist.id, msg, budget ? parseFloat(budget) : undefined);
+        success('Request sent! The artist will get back to you.');
+        hireModal.classList.remove('open');
+        document.getElementById('hire-form').reset();
+      } catch(err) { errEl.textContent = err.message || 'Failed to send request'; errEl.classList.remove('hidden'); }
+    });
+
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artwork — Artfolio</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .artwork-detail-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      margin-bottom: 32px;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .artwork-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .artwork-detail-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Media display */
+    .artwork-detail-media {
+      background: var(--secondary-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .artwork-detail-media img {
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      display: block;
+    }
+    .artwork-detail-media video {
+      width: 100%;
+      max-height: 560px;
+      display: block;
+      background: #000;
+    }
+    .artwork-detail-media audio {
+      width: 100%;
+    }
+    .audio-detail-wrap {
+      padding: 48px 32px;
+      text-align: center;
+      width: 100%;
+    }
+    .audio-detail-icon {
+      width: 96px;
+      height: 96px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .doc-detail-wrap {
+      padding: 64px 32px;
+      text-align: center;
+      width: 100%;
+    }
+    .doc-detail-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--secondary-bg);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      border: 2px solid var(--border);
+    }
+
+    /* Right panel */
+    .artwork-detail-panel {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .artwork-detail-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .artwork-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .artwork-detail-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 28px;
+      font-size: .95rem;
+    }
+    .artwork-detail-price {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+    .artwork-detail-price span {
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* Artist card inside detail */
+    .artist-detail-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .artist-contact-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .artist-contact-row .btn {
+      width: 100%;
+      justify-content: center;
+    }
+    @media (max-width: 520px) {
+      .artist-contact-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .artist-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .artist-detail-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--secondary-bg);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .artist-detail-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+    .artist-detail-cat {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .artist-detail-bio {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .artist-detail-rate {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .action-buttons .btn {
+      width: 100%;
+      justify-content: center;
+      padding: 14px;
+      font-size: 1rem;
+    }
+
+    /* Hire Modal */
+    /* Full-screen hire panel */
+    .hire-panel-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+    .hire-panel-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .hire-panel {
+      background: #fcfaf6;
+      border-radius: 28px 28px 0 0;
+      width: 100%;
+      max-width: 780px;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform .32s cubic-bezier(.32,1,.32,1);
+      padding: 0 0 40px;
+      box-shadow: 0 -24px 60px rgba(0,0,0,.22);
+    }
+    .hire-panel-overlay.open .hire-panel {
+      transform: translateY(0);
+    }
+    .hire-panel-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      margin: 16px auto 0;
+    }
+    .hire-panel-header {
+      padding: 28px 36px 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 0;
+    }
+    .hire-panel-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 2vw, 1.85rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.15;
+      max-width: 560px;
+    }
+    .hire-panel-sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 6px;
+    }
+    .hire-panel-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      padding: 32px 36px;
+    }
+    @media (max-width: 640px) {
+      .hire-panel-body { grid-template-columns: 1fr; padding: 24px 20px; }
+      .hire-panel-header { padding: 24px 20px 20px; }
+      .hire-panel-title { max-width: none; }
+    }
+    .hire-section-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* Bid box */
+    .bid-box {
+      background: linear-gradient(135deg, #f8f4ef, #f0ebe3);
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .bid-ref-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .bid-ref-label { font-size: .8rem; color: var(--muted); }
+    .bid-ref-price { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+    .bid-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bid-currency {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .bid-input {
+      flex: 1;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      font-family: var(--font-serif);
+    }
+    .bid-input::placeholder { color: var(--border); }
+    .bid-hint {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    .hire-panel-footer {
+      padding: 0 36px;
+      display: flex;
+      gap: 12px;
+    }
+    @media (max-width: 640px) { .hire-panel-footer { padding: 0 20px; } }
+    .hire-panel-footer .btn { flex: 1; justify-content: center; padding: 15px; font-size: 1rem; }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--secondary-bg) 25%, var(--border) 50%, var(--secondary-bg) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div style="padding-top:var(--nav-h);">
+    <div class="artwork-detail-wrap">
+      <a href="javascript:history.back()" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+
+      <div id="detail-content">
+        <!-- Loading skeleton -->
+        <div class="artwork-detail-grid">
+          <div class="artwork-detail-media skeleton" style="min-height:420px;"></div>
+          <div class="artwork-detail-panel">
+            <div class="skeleton" style="height:36px;margin-bottom:12px;"></div>
+            <div class="skeleton" style="height:20px;width:60%;margin-bottom:28px;"></div>
+            <div class="skeleton" style="height:80px;margin-bottom:28px;"></div>
+            <div class="skeleton" style="height:48px;border-radius:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hire Panel -->
+  <div class="hire-panel-overlay" id="hire-panel-overlay">
+    <div class="hire-panel">
+      <div class="hire-panel-handle"></div>
+      <div class="hire-panel-header">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="hire-panel-title">Make an Offer to <span id="modal-artist-name">Artist</span></div>
+            <div class="hire-panel-sub" id="modal-artwork-ref">Submit your project details and bid price</div>
+          </div>
+          <button id="cancel-hire" style="background:none;border:none;cursor:pointer;padding:8px;color:var(--muted);" aria-label="Close">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <form id="hire-form">
+        <div class="hire-panel-body">
+          <!-- Left: Project Details -->
+          <div>
+            <div class="hire-section-label">Project Details</div>
+            <div class="form-group">
+              <label for="hire-title" style="font-weight:600;font-size:.875rem;display:block;margin-bottom:6px;">Project Title <span style="color:#e55">*</span></label>
+              <input id="hire-title" type="text" class="form-input" placeholder="e.g. Album cover design for my EP" required />
+            </div>
+            <div class="form-group">
+              <label for="hire-desc" style="font-weight:600;font-size:.875rem;display:block;margin-bottom:6px;">Description <span style="color:#e55">*</span></label>
+              <textarea id="hire-desc" class="form-input form-textarea" rows="5" placeholder="Describe your project in detail — style, mood, references, deliverables…" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="hire-deadline" style="font-weight:600;font-size:.875rem;display:block;margin-bottom:6px;">Deadline</label>
+              <input id="hire-deadline" type="date" class="form-input" />
+              <div style="font-size:.78rem;color:var(--muted);margin-top:4px;">Leave blank if flexible</div>
+            </div>
+          </div>
+
+          <!-- Right: Bid/Offer -->
+          <div>
+            <div class="hire-section-label">Your Offer</div>
+            <div class="bid-box">
+              <div class="bid-ref-row" id="bid-ref-row" style="display:none;">
+                <span class="bid-ref-label">Artist's listed price</span>
+                <span class="bid-ref-price" id="bid-ref-price">—</span>
+              </div>
+              <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;">Your bid (USD)</div>
+              <div class="bid-input-wrap">
+                <span class="bid-currency">$</span>
+                <input type="number" id="hire-budget" class="bid-input" placeholder="0" min="1" step="0.01" />
+              </div>
+              <div class="bid-hint">Set your price — the artist can accept, decline, or negotiate.</div>
+            </div>
+
+            <div style="background:var(--secondary-bg);border-radius:12px;padding:16px;font-size:.85rem;color:var(--muted);line-height:1.6;">
+              <div style="font-weight:600;color:var(--text);margin-bottom:6px;">How it works</div>
+              <div>1. Submit your offer with project details</div>
+              <div>2. Artist receives a notification instantly</div>
+              <div>3. They can accept, counter, or decline</div>
+              <div>4. Once accepted, you collaborate directly</div>
+            </div>
+
+            <p id="hire-error" style="color:#e55353;margin-top:12px;font-size:.875rem;display:none;padding:10px;background:#fef2f2;border-radius:8px;"></p>
+          </div>
+        </div>
+
+        <div class="hire-panel-footer">
+          <button type="button" class="btn btn-outline" id="cancel-hire-2">Cancel</button>
+          <button type="submit" class="btn btn-accent" id="hire-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Offer to Artist
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script type="module">
+    import { renderNav } from '/js/nav.js';
+    import { getArtworkById, getArtistById, sendHireRequest, getMe } from '/js/api.js';
+    import { success as showToast, error as showError } from '/js/toast.js';
+
+    renderNav('browse');
+
+    const params = new URLSearchParams(window.location.search);
+    const artworkId = params.get('id');
+
+    if (!artworkId) {
+      window.location.href = '/browse.html';
+    }
+
+    let currentUser = null;
+    let artwork = null;
+    let artist = null;
+
+    function whatsappLink(phoneNumber, message) {
+      const digits = String(phoneNumber || '').replace(/\D/g, '');
+      if (!digits) return '';
+      return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+    }
+
+    try { currentUser = await getMe(); } catch {}
+
+    async function load() {
+      try {
+        artwork = await getArtworkById(artworkId);
+        document.title = `${artwork.title} — Artfolio`;
+
+        if (artwork.artistId) {
+          try { artist = await getArtistById(artwork.artistId); } catch {}
+        }
+
+        render();
+      } catch (e) {
+        document.getElementById('detail-content').innerHTML = `
+          <div style="text-align:center;padding:80px 0;">
+            <p style="font-size:1.1rem;color:var(--muted)">Artwork not found.</p>
+            <a href="/browse.html" class="btn btn-accent" style="margin-top:16px">Browse Works</a>
+          </div>`;
+      }
+    }
+
+    function mediaHTML() {
+      const placeholder = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><rect fill='%23f0ebe3' width='100%25' height='100%25'/><text x='50%25' y='50%25' text-anchor='middle' fill='%23bbb' dy='.3em' font-family='sans-serif' font-size='18'>No Preview</text></svg>`;
+      if (artwork.mediaType === 'audio') {
+        return `<div class="audio-detail-wrap">
+          <div class="audio-detail-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <p style="font-family:var(--font-serif);font-size:1.1rem;font-weight:600;margin-bottom:20px;">${artwork.title}</p>
+          <audio controls style="width:100%;max-width:400px;"><source src="${artwork.imageUrl}"></audio>
+        </div>`;
+      }
+      if (artwork.mediaType === 'video') {
+        return `<video controls style="width:100%;max-height:560px;background:#000;"><source src="${artwork.imageUrl}"></video>`;
+      }
+      if (artwork.mediaType === 'document') {
+        return `<div class="doc-detail-wrap">
+          <div class="doc-detail-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <p style="font-size:1rem;font-weight:600;margin-bottom:20px;">${artwork.title}</p>
+          <a href="${artwork.imageUrl}" target="_blank" class="btn btn-accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download / View Document
+          </a>
+        </div>`;
+      }
+      return `<img src="${artwork.imageUrl || placeholder}" alt="${artwork.title}" style="width:100%;max-height:600px;object-fit:contain;display:block;" onerror="this.src='${placeholder}'">`;
+    }
+
+    function artistPanelHTML() {
+      if (!artist) return '';
+      const canContact = currentUser && currentUser.id !== artist.id;
+      const avatarEl = artist.profileImage
+        ? `<img src="${artist.profileImage}" alt="${artist.name}" class="artist-detail-avatar" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">`
+        : `<div class="artist-detail-avatar">${artist.name[0]}</div>`;
+
+      return `<div class="artist-detail-card">
+        <div class="artist-detail-header">
+          ${avatarEl}
+          <div>
+            <div class="artist-detail-name">${artist.name}</div>
+            <div class="artist-detail-cat">${artist.category || 'Artist'}</div>
+          </div>
+        </div>
+        ${artist.bio ? `<p class="artist-detail-bio">${artist.bio}</p>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          ${artist.hourlyRate ? `<span class="artist-detail-rate">From $${artist.hourlyRate}/hr</span>` : ''}
+          ${artist.location ? `<span style="font-size:.85rem;color:var(--muted)">📍 ${artist.location}</span>` : ''}
+        </div>
+        <div class="artist-contact-row">
+          ${canContact && artist.email ? `<a href="mailto:${artist.email}?subject=${encodeURIComponent(`Project inquiry for ${artwork.title}`)}&body=${encodeURIComponent(`Hi ${artist.name}, I want to discuss your project: ${artwork.title}.`)}" class="btn btn-outline btn-sm">Email</a>` : ''}
+          ${canContact && artist.phoneNumber ? `<a href="${whatsappLink(artist.phoneNumber, `Hi ${artist.name}, I want to discuss your project: ${artwork.title}.`)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">WhatsApp</a>` : ''}
+        </div>
+      </div>`;
+    }
+
+    function actionButtonsHTML() {
+      const isOwn = currentUser && artwork.artistId === currentUser.id;
+      const isClient = currentUser && currentUser.role === 'client';
+      const isLoggedIn = !!currentUser;
+
+      const profileBtn = artist
+        ? `<a href="/profile.html?id=${artist.id}" class="btn btn-outline">View Artist Profile</a>`
+        : '';
+
+      if (isOwn) {
+        return `<div class="action-buttons">
+          ${profileBtn}
+          <div style="text-align:center;color:var(--muted);font-size:.875rem;padding:8px;">This is your artwork</div>
+        </div>`;
+      }
+
+      if (isClient) {
+        return `<div class="action-buttons">
+          <button class="btn btn-accent" id="hire-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Hire This Artist
+          </button>
+          ${profileBtn}
+        </div>`;
+      }
+
+      if (!isLoggedIn) {
+        return `<div class="action-buttons">
+          <a href="/login.html" class="btn btn-accent">Sign In to Hire</a>
+          ${profileBtn}
+        </div>`;
+      }
+
+      return `<div class="action-buttons">${profileBtn}</div>`;
+    }
+
+    function render() {
+      const typeLabel = { image: 'Visual Art', audio: 'Music', video: 'Video', document: 'Document' }[artwork.mediaType] || 'Artwork';
+      const typeBadge = { image: 'badge-image', audio: 'badge-audio', video: 'badge-video', document: 'badge-document' }[artwork.mediaType] || 'badge-image';
+
+      document.getElementById('detail-content').innerHTML = `
+        <div class="artwork-detail-grid">
+          <div>
+            <div class="artwork-detail-media">${mediaHTML()}</div>
+          </div>
+          <div class="artwork-detail-panel">
+            <div class="artwork-detail-meta">
+              <span class="artwork-type-badge ${typeBadge}">${typeLabel}</span>
+              ${artwork.category ? `<span style="font-size:.85rem;color:var(--muted);">${artwork.category}</span>` : ''}
+            </div>
+            <h1 class="artwork-detail-title">${artwork.title}</h1>
+            ${artwork.description ? `<p class="artwork-detail-desc">${artwork.description}</p>` : ''}
+            ${artwork.price ? `<div class="artwork-detail-price">$${artwork.price} <span>/ project</span></div>` : ''}
+            ${artwork.projectUrl ? `<a href="${artwork.projectUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="margin-bottom:20px;">View Live Project</a>` : ''}
+            ${artistPanelHTML()}
+            ${actionButtonsHTML()}
+          </div>
+        </div>`;
+
+      // Wire hire button
+      document.getElementById('hire-btn')?.addEventListener('click', () => {
+        document.getElementById('modal-artist-name').textContent = artist?.name || 'Artist';
+        document.getElementById('modal-artwork-ref').textContent = `For: "${artwork.title}"`;
+
+        // Show artist's listed price as reference if available
+        const price = artwork.price || (artist && artist.hourlyRate);
+        if (price) {
+          const refRow = document.getElementById('bid-ref-row');
+          const refPrice = document.getElementById('bid-ref-price');
+          refRow.style.display = 'flex';
+          refPrice.textContent = artwork.price
+            ? `$${artwork.price} / project`
+            : `$${artist.hourlyRate} / hr`;
+        }
+
+        document.getElementById('hire-panel-overlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    function closehirePanel() {
+      document.getElementById('hire-panel-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('cancel-hire').addEventListener('click', closehirePanel);
+    document.getElementById('cancel-hire-2').addEventListener('click', closehirePanel);
+    document.getElementById('hire-panel-overlay').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closehirePanel();
+    });
+
+    document.getElementById('hire-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('hire-error');
+      const btn = document.getElementById('hire-submit');
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Sending…';
+
+      const title = document.getElementById('hire-title').value.trim();
+      const description = document.getElementById('hire-desc').value.trim();
+      const budget = document.getElementById('hire-budget').value;
+      const deadline = document.getElementById('hire-deadline').value;
+
+      try {
+        await sendHireRequest(artwork.artistId, {
+          title,
+          description,
+          budget: budget ? Number(budget) : undefined,
+          deadline: deadline || undefined
+        });
+        closehirePanel();
+        showToast('🎉 Offer sent! The artist has been notified and will respond soon.');
+        document.getElementById('hire-form').reset();
+        document.getElementById('bid-ref-row').style.display = 'none';
+      } catch (err) {
+        errEl.textContent = err.message || 'Failed to send request.';
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Offer to Artist';
+      }
+    });
+
+    load();
+  </script>
+</body>
+</html>

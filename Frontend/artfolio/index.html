@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artfolio — Where Art Meets Opportunity</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <main>
+    <section class="hero">
+      <div class="hero-bg-circle" style="width:60vw;height:60vw;background:var(--secondary-bg);top:-20%;right:-15%;opacity:.6;"></div>
+      <div class="hero-bg-circle" style="width:40vw;height:40vw;background:rgba(224,125,90,.12);bottom:-10%;left:-10%;"></div>
+      <div class="container" style="position:relative;">
+        <div class="hero-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          The premier destination for creative talent
+        </div>
+        <h1 class="hero-title">Where exceptional <em>art</em><br>meets visionary clients.</h1>
+        <p class="hero-sub">Discover world-class illustrators, musicians, designers, and digital artists. Commission bespoke work that elevates your project from ordinary to unforgettable.</p>
+        <div class="hero-cta">
+          <a href="/browse.html" class="btn btn-primary btn-lg">Explore Gallery</a>
+          <a href="/register.html" class="btn btn-outline btn-lg">Join as an Artist</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-bar">
+      <div class="container">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-item"><div class="stat-num" id="stat-artists">—</div><div class="stat-label">Curated Artists</div></div>
+          <div class="stat-item"><div class="stat-num" id="stat-artworks">—</div><div class="stat-label">Original Works</div></div>
+          <div class="stat-item"><div class="stat-num" id="stat-cats">5</div><div class="stat-label">Creative Disciplines</div></div>
+          <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Vetted Talent</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:80px 0;">
+      <div class="container">
+        <div class="section-header section-header-row">
+          <div><div class="section-label">Featured Talent</div><h2 class="section-title">Meet our top artists</h2></div>
+          <a href="/browse.html" class="btn btn-outline btn-sm">View all →</a>
+        </div>
+        <div class="artist-grid" id="featured-artists"><div class="loading-wrap"><div class="spinner"></div></div></div>
+      </div>
+    </section>
+
+    <section style="padding:80px 0;background:var(--secondary-bg);">
+      <div class="container">
+        <div class="section-header section-header-row">
+          <div><div class="section-label">Latest Works</div><h2 class="section-title">Fresh from the studio</h2></div>
+          <a href="/browse.html" class="btn btn-outline btn-sm">Browse all →</a>
+        </div>
+        <div class="artwork-grid" id="recent-artworks"><div class="loading-wrap"><div class="spinner"></div></div></div>
+      </div>
+    </section>
+
+    <section style="padding:100px 0;text-align:center;">
+      <div class="container-sm">
+        <div class="section-label" style="text-align:center;">Ready to create?</div>
+        <h2 class="section-title" style="text-align:center;">Join thousands of artists<br>sharing their work</h2>
+        <p style="color:var(--muted);text-align:center;margin:0 auto 40px;max-width:480px;">Upload images, music, videos, and more. Connect with clients who value your unique vision.</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+          <a href="/register.html" class="btn btn-primary btn-lg">Start for free</a>
+          <a href="/browse.html" class="btn btn-outline btn-lg">Browse artists</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div><div class="footer-brand">Artfolio</div><p class="footer-desc">The premier marketplace connecting world-class artists with visionary clients.</p></div>
+        <div><div class="footer-heading">Explore</div><div class="footer-links"><a href="/browse.html">Browse Artists</a><a href="/browse.html">Visual Art</a><a href="/browse.html">Music</a></div></div>
+        <div><div class="footer-heading">Artists</div><div class="footer-links"><a href="/register.html">Join as Artist</a><a href="/dashboard.html">My Studio</a></div></div>
+        <div><div class="footer-heading">Company</div><div class="footer-links"><a href="#">About</a><a href="#">Blog</a><a href="#">Contact</a></div></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Artfolio</span><span>Made with ♥ for artists everywhere</span></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { renderNav } from '/js/nav.js';
+    import { getFeaturedArtists, getArtworks, getPlatformStats } from '/js/api.js';
+    import { artworkCardHTML, artistCardHTML } from '/js/cards.js';
+    renderNav('home');
+    async function load() {
+      try {
+        const [stats, artists, artworks] = await Promise.all([getPlatformStats(), getFeaturedArtists(), getArtworks()]);
+        if (stats) {
+          document.getElementById('stat-artists').textContent = stats.totalArtists || 0;
+          document.getElementById('stat-artworks').textContent = stats.totalArtworks || 0;
+          document.getElementById('stat-cats').textContent = (stats.categories||[]).length || 5;
+        }
+        document.getElementById('featured-artists').innerHTML = (artists||[]).slice(0,4).map(artistCardHTML).join('') || '<p class="text-muted text-center">No artists yet.</p>';
+        document.getElementById('recent-artworks').innerHTML = (artworks||[]).slice(0,8).map(artworkCardHTML).join('') || '<p class="text-muted text-center">No artworks yet.</p>';
+      } catch(e) { console.error(e); }
+    }
+    load();
+  </script>
+</body>
+</html>
