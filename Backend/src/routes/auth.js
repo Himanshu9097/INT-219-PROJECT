@@ -15,6 +15,11 @@ function formatUser(user) {
     tagline: user.tagline,
     bio: user.bio,
     skills: user.skills,
+    spotlights: (user.spotlights && user.spotlights.length > 0)
+      ? user.spotlights
+      : (user.spotlightTitle || user.spotlightDescription || user.spotlightImage)
+        ? [{ title: user.spotlightTitle, description: user.spotlightDescription, image: user.spotlightImage }]
+        : [],
     profileImage: user.profileImage,
     hourlyRate: user.hourlyRate,
     category: user.category,

@@ -365,6 +365,8 @@
         const overviewGrid = document.getElementById('overview-works');
         if (myWorks.length > 0) {
           overviewGrid.innerHTML = myWorks.slice(0,4).map(a => artworkCardHTML(a)).join('');
+        } else {
+          overviewGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🎨</div><div class="empty-state-title">Upload your first work</div><div class="empty-state-sub">Start your portfolio with a certificate, concert project, product shoot, or any creative work.</div><button onclick="showTab('upload')" class="btn btn-accent" style="margin-top:16px">Upload Now</button></div>`;
         }
       } catch(e) { console.error(e); }
     }
@@ -386,6 +388,7 @@
     }
 
     let communityFilter = '';
+    let currentSpotlights = [];
     async function loadCommunity() {
       const feed = document.getElementById('community-feed');
       const artistsEl = document.getElementById('community-artists');
@@ -431,6 +434,26 @@
     async function loadProfileTab() {
       const el = document.getElementById('profile-info');
       if (!currentUser) return;
+      const spotlights = Array.isArray(currentUser.spotlights)
+        ? currentUser.spotlights
+        : (currentUser.spotlightTitle || currentUser.spotlightDescription || currentUser.spotlightImage)
+          ? [{ title: currentUser.spotlightTitle, description: currentUser.spotlightDescription, image: currentUser.spotlightImage }]
+          : [];
+      currentSpotlights = [...spotlights];
+      const spotlightSummary = currentSpotlights.length
+        ? `<div style="margin-top:20px;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--secondary-bg);display:grid;gap:12px;">
+            <div style="font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--accent);">HIGHLIGHTS</div>
+            <div style="display:grid;gap:12px;">
+              ${currentSpotlights.map((s) => `
+                <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;display:grid;gap:8px;">
+                  ${s.image ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.title || 'Highlight')}" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;" />` : ''}
+                  ${s.title ? `<div style="font-family:var(--font-serif);font-weight:700;">${escapeHtml(s.title)}</div>` : ''}
+                  ${s.description ? `<div style="color:var(--muted);font-size:.9rem;">${escapeHtml(s.description)}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>`
+        : '';
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
           <div style="width:64px;height:64px;border-radius:50%;background:${currentUser.profileImage ? `url(${escapeHtml(currentUser.profileImage)}) center/cover no-repeat` : 'var(--secondary-bg)'};display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:var(--accent);flex-shrink:0">${currentUser.profileImage ? '' : currentUser.name[0]}</div>
@@ -453,6 +476,7 @@
             ${currentUser.github ? `<a href="${escapeHtml(currentUser.github)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">GitHub</a>` : ''}
           </div>` : ''}
         ${currentUser.skills ? `<div style="margin-top:16px"><div style="font-size:.8rem;font-weight:700;color:var(--foreground);margin-bottom:8px;">SKILLS</div><div class="profile-skills">${currentUser.skills.split(',').map(s=>`<span class="skill-tag">${s.trim()}</span>`).join('')}</div></div>` : ''}
+        ${spotlightSummary}
         <form id="profile-edit-form" style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border);display:grid;gap:16px;">
           <div style="font-family:var(--font-serif);font-size:1.1rem;font-weight:700;">Customize Public Profile</div>
           <div class="form-group">
@@ -538,6 +562,13 @@
               <input class="form-input" id="profile-github-input" type="url" placeholder="https://github.com/..." value="${escapeHtml(currentUser.github || '')}" />
             </div>
           </div>
+          <div style="margin-top:8px;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--secondary-bg);display:grid;gap:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <div style="font-family:var(--font-serif);font-size:1rem;font-weight:700;">Certificate, Concert, or Product Highlights</div>
+              <button type="button" class="btn btn-outline btn-sm" id="add-spotlight-btn">Add Highlight</button>
+            </div>
+            <div id="spotlight-list"></div>
+          </div>
           <div class="form-error hidden" id="profile-save-error" style="padding:12px;background:#fef2f2;border-radius:8px;"></div>
           <button type="submit" class="btn btn-accent">Save Profile</button>
         </form>
@@ -546,6 +577,8 @@
 
       document.getElementById('profile-edit-form').addEventListener('submit', saveProfile);
       document.getElementById('profile-image-upload-btn').addEventListener('click', uploadAndSaveProfileImage);
+      document.getElementById('add-spotlight-btn').addEventListener('click', addSpotlight);
+      renderSpotlightList();
     }
 
     async function saveProfile(e) {
@@ -569,6 +602,13 @@
         behance: document.getElementById('profile-behance-input').value.trim() || undefined,
         linkedin: document.getElementById('profile-linkedin-input').value.trim() || undefined,
         github: document.getElementById('profile-github-input').value.trim() || undefined,
+        spotlights: currentSpotlights
+          .map((s) => ({
+            title: (s.title || '').trim(),
+            description: (s.description || '').trim(),
+            image: (s.image || '').trim(),
+          }))
+          .filter((s) => s.title || s.description || s.image),
       };
 
       const phoneDigits = document.getElementById('profile-phone-input').value.replace(/\D/g, '');
@@ -638,6 +678,7 @@
           behance: currentUser.behance,
           linkedin: currentUser.linkedin,
           github: currentUser.github,
+          spotlights: currentSpotlights,
           profileImage: uploaded.url,
         });
 
@@ -658,6 +699,86 @@
         uploadBtn.textContent = 'Upload';
       }
     }
+    function renderSpotlightList() {
+      const list = document.getElementById('spotlight-list');
+      if (!list) return;
+      if (!currentSpotlights.length) {
+        list.innerHTML = `<div class="empty-state" style="border:1px dashed var(--border);padding:16px;border-radius:12px;">
+          <div class="empty-state-title" style="font-size:1rem;">Add your first highlight</div>
+          <div class="empty-state-sub">Show a certificate, concert, event, or product work with title, description, and image.</div>
+        </div>`;
+        return;
+      }
+      list.innerHTML = currentSpotlights
+        .map((s, idx) => `
+          <div style="border:1px solid var(--border);border-radius:12px;padding:14px;display:grid;gap:10px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <div style="font-weight:700;color:var(--foreground);">Highlight #${idx + 1}</div>
+              <button type="button" class="btn btn-outline btn-sm" onclick="window.__removeSpotlight(${idx})">Remove</button>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Title</label>
+              <input class="form-input" type="text" value="${escapeHtml(s.title || '')}" oninput="window.__updateSpotlight(${idx}, 'title', this.value)" placeholder="Best Concert Coverage 2025" />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Description</label>
+              <textarea class="form-input form-textarea" rows="3" oninput="window.__updateSpotlight(${idx}, 'description', this.value)" placeholder="Share what this certificate, concert, event, or product work was about">${escapeHtml(s.description || '')}</textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Highlight Image</label>
+              <input class="form-input" type="url" value="${escapeHtml(s.image || '')}" oninput="window.__updateSpotlight(${idx}, 'image', this.value)" placeholder="https://..." />
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+                <input class="form-input" id="spotlight-file-${idx}" type="file" accept="image/*" style="flex:1;" />
+                <button type="button" class="btn btn-outline btn-sm" onclick="window.__uploadSpotlight(${idx})">Upload</button>
+              </div>
+              ${s.image ? `<div style="margin-top:10px;"><img src="${escapeHtml(s.image)}" alt="Highlight ${idx + 1}" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;" /></div>` : ''}
+            </div>
+          </div>
+        `)
+        .join('');
+    }
+
+    function addSpotlight() {
+      if (currentSpotlights.length >= 5) { success('You can add up to 5 highlights.'); return; }
+      currentSpotlights.push({ title: '', description: '', image: '' });
+      renderSpotlightList();
+    }
+
+    function updateSpotlight(idx, field, value) {
+      if (!currentSpotlights[idx]) return;
+      currentSpotlights[idx] = { ...currentSpotlights[idx], [field]: value };
+    }
+
+    async function uploadSpotlight(idx) {
+      const errEl = document.getElementById('profile-save-error');
+      errEl.classList.add('hidden');
+      const input = document.getElementById(`spotlight-file-${idx}`);
+      const file = input?.files?.[0];
+      if (!file) {
+        errEl.textContent = 'Please choose a highlight image first.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      try {
+        const uploaded = await uploadProfileImage(file);
+        currentSpotlights[idx] = { ...currentSpotlights[idx], image: uploaded.url };
+        renderSpotlightList();
+        success('Highlight image uploaded. Save profile to apply.');
+      } catch (err) {
+        errEl.textContent = err.message || 'Failed to upload highlight image.';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function removeSpotlight(idx) {
+      currentSpotlights.splice(idx, 1);
+      renderSpotlightList();
+    }
+
+    // expose helpers
+    window.__updateSpotlight = updateSpotlight;
+    window.__uploadSpotlight = uploadSpotlight;
+    window.__removeSpotlight = removeSpotlight;
 
     // ── Requests Tab ──────────────────────────────────────────
     const statusConfig = {

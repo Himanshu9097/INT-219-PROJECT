@@ -14,6 +14,12 @@ function formatArtist(artist, artworkCount = 0) {
     tagline: artist.tagline,
     bio: artist.bio,
     skills: artist.skills,
+    spotlights:
+      artist.spotlights && artist.spotlights.length > 0
+        ? artist.spotlights
+        : artist.spotlightTitle || artist.spotlightDescription || artist.spotlightImage
+          ? [{ title: artist.spotlightTitle, description: artist.spotlightDescription, image: artist.spotlightImage }]
+          : [],
     profileImage: artist.profileImage,
     hourlyRate: artist.hourlyRate,
     category: artist.category,
@@ -141,6 +147,10 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
     tagline,
     bio,
     skills,
+    spotlights,
+    spotlightTitle,
+    spotlightDescription,
+    spotlightImage,
     profileImage,
     hourlyRate,
     category,
@@ -154,6 +164,26 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
     availabilityStatus,
   } = req.body;
 
+  const normalizedSpotlights = Array.isArray(spotlights)
+    ? spotlights
+        .filter((s) => s && (s.title || s.description || s.image))
+        .slice(0, 5)
+        .map((s) => ({
+          title: s.title,
+          description: s.description,
+          image: s.image,
+        }))
+    : [];
+
+  // Backward compatibility: accept single spotlight fields if array not provided
+  if (!normalizedSpotlights.length && (spotlightTitle || spotlightDescription || spotlightImage)) {
+    normalizedSpotlights.push({
+      title: spotlightTitle,
+      description: spotlightDescription,
+      image: spotlightImage,
+    });
+  }
+
   const updated = await User.findByIdAndUpdate(
     req.userId,
     {
@@ -161,6 +191,7 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
       tagline,
       bio,
       skills,
+      spotlights: normalizedSpotlights,
       profileImage,
       hourlyRate,
       category,
@@ -189,6 +220,7 @@ router.put("/artists/profile", requireAuth, async (req, res) => {
     tagline: updated.tagline,
     bio: updated.bio,
     skills: updated.skills,
+    spotlights: updated.spotlights ?? [],
     profileImage: updated.profileImage,
     hourlyRate: updated.hourlyRate,
     category: updated.category,

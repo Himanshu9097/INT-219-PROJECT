@@ -42,8 +42,8 @@ input, textarea, select { font-family: inherit; }
 }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 .nav-logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; color: var(--foreground); }
-.nav-logo-icon { width: 36px; height: 36px; background: var(--foreground); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-.nav-logo-icon svg { color: var(--bg); }
+.nav-logo-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: transparent; }
+.nav-logo-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .nav-links { display: flex; align-items: center; gap: 8px; }
 .nav-link { padding: 8px 16px; border-radius: 99px; font-size: 0.9rem; font-weight: 500; color: var(--muted); transition: all 0.2s; }
 .nav-link:hover { background: var(--secondary-bg); color: var(--foreground); }

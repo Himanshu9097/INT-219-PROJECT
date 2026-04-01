@@ -11,6 +11,14 @@ const UserSchema = new Schema(
     tagline: { type: String },
     bio: { type: String },
     skills: { type: String },
+    spotlights: [
+      {
+        title: { type: String },
+        description: { type: String },
+        image: { type: String },
+        _id: false,
+      },
+    ],
     profileImage: { type: String },
     hourlyRate: { type: Number },
     category: { type: String },
