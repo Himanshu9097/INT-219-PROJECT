@@ -41,7 +41,7 @@ export function artworkCardHTML(a, showActions = false, currentUserId = null) {
       <div class="artwork-title">${a.title}</div>
       ${a.description ? `<div style="font-size:.85rem;color:var(--muted);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${a.description}</div>` : ''}
       ${a.artistName ? `<div class="artwork-artist">${artistPic}<span class="artwork-artist-name">${a.artistName}</span></div>` : ''}
-      ${a.price ? `<div class="artwork-price">$${a.price}</div>` : ''}
+      ${a.price ? `<div class="artwork-price">₹${a.price}</div>` : ''}
       ${actions}
     </div>
   </a>`;

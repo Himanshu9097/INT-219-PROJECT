@@ -422,9 +422,9 @@
                 <span class="bid-ref-label">Artist's listed price</span>
                 <span class="bid-ref-price" id="bid-ref-price">—</span>
               </div>
-              <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;">Your bid (USD)</div>
+              <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;">Your bid (INR)</div>
               <div class="bid-input-wrap">
-                <span class="bid-currency">$</span>
+                <span class="bid-currency">₹</span>
                 <input type="number" id="hire-budget" class="bid-input" placeholder="0" min="1" step="0.01" />
               </div>
               <div class="bid-hint">Set your price — the artist can accept, decline, or negotiate.</div>
@@ -608,7 +608,7 @@
             </div>
             <h1 class="artwork-detail-title">${artwork.title}</h1>
             ${artwork.description ? `<p class="artwork-detail-desc">${artwork.description}</p>` : ''}
-            ${artwork.price ? `<div class="artwork-detail-price">$${artwork.price} <span>/ project</span></div>` : ''}
+            ${artwork.price ? `<div class="artwork-detail-price">₹${artwork.price} <span>/ project</span></div>` : ''}
             ${artwork.projectUrl ? `<a href="${artwork.projectUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="margin-bottom:20px;">View Live Project</a>` : ''}
             ${artistPanelHTML()}
             ${actionButtonsHTML()}
@@ -621,15 +621,15 @@
         document.getElementById('modal-artwork-ref').textContent = `For: "${artwork.title}"`;
 
         // Show artist's listed price as reference if available
-        const price = artwork.price || (artist && artist.hourlyRate);
-        if (price) {
-          const refRow = document.getElementById('bid-ref-row');
-          const refPrice = document.getElementById('bid-ref-price');
-          refRow.style.display = 'flex';
+          const price = artwork.price || (artist && artist.hourlyRate);
+          if (price) {
+            const refRow = document.getElementById('bid-ref-row');
+            const refPrice = document.getElementById('bid-ref-price');
+            refRow.style.display = 'flex';
           refPrice.textContent = artwork.price
-            ? `$${artwork.price} / project`
-            : `$${artist.hourlyRate} / hr`;
-        }
+            ? `₹${artwork.price} / project`
+            : `₹${artist.hourlyRate} / hr`;
+          }
 
         document.getElementById('hire-panel-overlay').classList.add('open');
         document.body.style.overflow = 'hidden';
