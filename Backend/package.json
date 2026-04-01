@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon --env NODE_ENV=development --watch src --ext js --exec \"node --import dotenv/config ./src/server.js\"",
+    "dev": "PORT=${PORT:-5001} sh -c 'p=$(lsof -tiTCP:$PORT -sTCP:LISTEN 2>/dev/null) && [ -n \"$p\" ] && kill $p; NODE_ENV=development nodemon --signal SIGTERM --exec node --import dotenv/config ./src/server.js'",
     "build": "esbuild src/server.js --bundle --platform=node --format=esm --packages=external --outfile=dist/server.mjs --sourcemap",
     "start": "node --import dotenv/config --enable-source-maps ./dist/server.mjs",
     "typecheck": "find src -name '*.js' -print0 | xargs -0 -n1 node --check"
