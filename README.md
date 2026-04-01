@@ -46,3 +46,10 @@ Frontend variables:
 - `PORT`
 - `BASE_PATH`
 - `API_PROXY_TARGET`
+
+
+
+lsof -nP -iTCP:5001 -sTCP:LISTEN
+kill <PID>
+npm run dev
+
