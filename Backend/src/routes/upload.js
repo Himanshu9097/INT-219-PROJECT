@@ -8,7 +8,10 @@ import { uploadProfileImageToImageKit } from "../lib/imagekit.js";
 
 const router = Router();
 
-const uploadsDir = path.join(os.tmpdir(), "uploads");
+const uploadsDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), "uploads")
+  : path.resolve(process.cwd(), "uploads");
+
 try {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });

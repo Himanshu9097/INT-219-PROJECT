@@ -38,13 +38,16 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const uploadsDir = path.join(os.tmpdir(), "uploads");
+const uploadsDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), "uploads")
+  : path.resolve(process.cwd(), "uploads");
+
 try {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 } catch (err) {
-  logger.warn({ err }, "Could not create uploads directory in /tmp.");
+  logger.warn({ err }, "Could not create uploads directory.");
 }
 app.use("/api/uploads", express.static(uploadsDir));
 
