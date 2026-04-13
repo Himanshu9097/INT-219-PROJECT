@@ -9,6 +9,8 @@
     "start": "node --import dotenv/config --enable-source-maps ./dist/server.mjs",
     "typecheck": "find src -name '*.js' -print0 | xargs -0 -n1 node --check"
   },
+  "start": "node --import dotenv/config --enable-source-maps ./dist/server.mjs",
+
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
