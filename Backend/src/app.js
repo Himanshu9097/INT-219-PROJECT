@@ -53,4 +53,8 @@ app.use("/api/uploads", express.static(uploadsDir));
 
 app.use("/api", router);
 
+app.get("/", (req, res) => {
+  res.json({ message: "Artfolio API is running", version: "1.0.0" });
+});
+
 export default app;
