@@ -38,8 +38,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const uploadsDir = path.resolve(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (err) {
+  logger.warn({ err }, "Could not create uploads directory, might be in a read-only filesystem (like Vercel).");
 }
 app.use("/api/uploads", express.static(uploadsDir));
 
