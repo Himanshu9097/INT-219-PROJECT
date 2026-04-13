@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
 import "./models/User.js";
@@ -37,13 +38,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const uploadsDir = path.resolve(process.cwd(), "uploads");
+const uploadsDir = path.join(os.tmpdir(), "uploads");
 try {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 } catch (err) {
-  logger.warn({ err }, "Could not create uploads directory, might be in a read-only filesystem (like Vercel).");
+  logger.warn({ err }, "Could not create uploads directory in /tmp.");
 }
 app.use("/api/uploads", express.static(uploadsDir));
 

@@ -2,14 +2,19 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import { requireAuth } from "../middlewares/auth.js";
 import { uploadProfileImageToImageKit } from "../lib/imagekit.js";
 
 const router = Router();
 
-const uploadsDir = path.resolve(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+const uploadsDir = path.join(os.tmpdir(), "uploads");
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (err) {
+  // Silent fail - Vercel might still complain but /tmp should work
 }
 
 const storage = multer.diskStorage({
