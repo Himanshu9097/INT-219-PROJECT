@@ -11,6 +11,18 @@
     {
       "src": "api/[...path].mjs",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/auth/login.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/auth/register.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/auth/me.mjs",
+      "use": "@vercel/node"
     }
   ]
 }
