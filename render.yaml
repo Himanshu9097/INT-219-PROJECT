@@ -11,3 +11,9 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: IMAGEKIT_PUBLIC_KEY
+        sync: false
+      - key: IMAGEKIT_PRIVATE_KEY
+        sync: false
+      - key: IMAGEKIT_URL_ENDPOINT
+        value: https://ik.imagekit.io/mntcbqrcm

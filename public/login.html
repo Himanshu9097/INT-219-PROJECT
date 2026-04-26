@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In — Artfolio</title>
+  <script type="module" crossorigin src="/assets/login-WnizWeMK.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/nav-BC0pQlW7.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-D4Myoz-8.js">
+  <link rel="stylesheet" crossorigin href="/assets/nav-BBv-8K-G.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Sign in to your Artfolio account</p>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input class="form-input" id="email" type="email" placeholder="you@example.com" required autocomplete="email" />
+          <div class="form-error hidden" id="email-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" id="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
+          <div class="form-error hidden" id="pw-error"></div>
+        </div>
+        <div class="form-error hidden" id="form-error" style="margin-bottom:16px;padding:12px;background:#fef2f2;border-radius:8px;"></div>
+        <button type="submit" class="btn btn-primary w-full" id="submit-btn">Sign in</button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="/register.html">Join Artfolio</a>
+      </div>
+
+      <div style="margin-top:24px;padding:16px;background:var(--secondary-bg);border-radius:8px;font-size:.8rem;color:var(--muted);">
+        <strong style="color:var(--foreground);">Demo accounts:</strong><br>
+        Artist: luna@artfolio.com / password123<br>
+        Client: rachel@client.com / password123
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

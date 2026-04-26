@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import path from "path";
 import fs from "fs";
-import os from "os";
 import { fileURLToPath } from "url";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
@@ -54,19 +53,6 @@ app.use("/api", async (req, res, next) => {
     res.status(503).json({ error: "Database temporarily unavailable" });
   }
 });
-
-const uploadsDir = process.env.VERCEL
-  ? path.join(os.tmpdir(), "uploads")
-  : path.resolve(process.cwd(), "uploads");
-
-try {
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-} catch (err) {
-  logger.warn({ err }, "Could not create uploads directory.");
-}
-app.use("/api/uploads", express.static(uploadsDir));
 
 // Keep both prefixes so the app works whether Vercel forwards /api/* directly
 // or exposes the backend routes at the site root.

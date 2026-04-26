@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artwork — Artfolio</title>
+  <style>
+    .artwork-detail-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      margin-bottom: 32px;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .artwork-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .artwork-detail-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Media display */
+    .artwork-detail-media {
+      background: var(--secondary-bg);
+      border-radius: 20px;
+      overflow: hidden;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .artwork-detail-media img {
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      display: block;
+    }
+    .artwork-detail-media video {
+      width: 100%;
+      max-height: 560px;
+      display: block;
+      background: #000;
+    }
+    .artwork-detail-media audio {
+      width: 100%;
+    }
+    .audio-detail-wrap {
+      padding: 48px 32px;
+      text-align: center;
+      width: 100%;
+    }
+    .audio-detail-icon {
+      width: 96px;
+      height: 96px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .doc-detail-wrap {
+      padding: 64px 32px;
+      text-align: center;
+      width: 100%;
+    }
+    .doc-detail-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--secondary-bg);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      border: 2px solid var(--border);
+    }
+
+    /* Right panel */
+    .artwork-detail-panel {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .artwork-detail-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .artwork-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .artwork-detail-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 28px;
+      font-size: .95rem;
+    }
+    .artwork-detail-price {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+    .artwork-detail-price span {
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* Artist card inside detail */
+    .artist-detail-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .artist-contact-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .artist-contact-row .btn {
+      width: 100%;
+      justify-content: center;
+    }
+    @media (max-width: 520px) {
+      .artist-contact-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .artist-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .artist-detail-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--secondary-bg);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .artist-detail-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+    .artist-detail-cat {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .artist-detail-bio {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .artist-detail-rate {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .action-buttons .btn {
+      width: 100%;
+      justify-content: center;
+      padding: 14px;
+      font-size: 1rem;
+    }
+
+    /* Hire Modal */
+    /* Full-screen hire panel */
+    .hire-panel-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+    .hire-panel-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .hire-panel {
+      background: #fcfaf6;
+      border-radius: 28px 28px 0 0;
+      width: 100%;
+      max-width: 780px;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform .32s cubic-bezier(.32,1,.32,1);
+      padding: 0 0 40px;
+      box-shadow: 0 -24px 60px rgba(0,0,0,.22);
+    }
+    .hire-panel-overlay.open .hire-panel {
+      transform: translateY(0);
+    }
+    .hire-panel-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      margin: 16px auto 0;
+    }
+    .hire-panel-header {
+      padding: 28px 36px 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 0;
+    }
+    .hire-panel-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 2vw, 1.85rem);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.15;
+      max-width: 560px;
+    }
+    .hire-panel-sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 6px;
+    }
+    .hire-panel-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      padding: 32px 36px;
+    }
+    @media (max-width: 640px) {
+      .hire-panel-body { grid-template-columns: 1fr; padding: 24px 20px; }
+      .hire-panel-header { padding: 24px 20px 20px; }
+      .hire-panel-title { max-width: none; }
+    }
+    .hire-section-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* Bid box */
+    .bid-box {
+      background: linear-gradient(135deg, #f8f4ef, #f0ebe3);
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .bid-ref-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .bid-ref-label { font-size: .8rem; color: var(--muted); }
+    .bid-ref-price { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+    .bid-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bid-currency {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .bid-input {
+      flex: 1;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      font-family: var(--font-serif);
+    }
+    .bid-input::placeholder { color: var(--border); }
+    .bid-hint {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    .hire-panel-footer {
+      padding: 0 36px;
+      display: flex;
+      gap: 12px;
+    }
+    @media (max-width: 640px) { .hire-panel-footer { padding: 0 20px; } }
+    .hire-panel-footer .btn { flex: 1; justify-content: center; padding: 15px; font-size: 1rem; }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--secondary-bg) 25%, var(--border) 50%, var(--secondary-bg) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+  <script type="module" crossorigin src="/assets/artwork-DvQs06xg.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/nav-BC0pQlW7.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-D4Myoz-8.js">
+  <link rel="stylesheet" crossorigin href="/assets/nav-BBv-8K-G.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div style="padding-top:var(--nav-h);">
+    <div class="artwork-detail-wrap">
+      <a href="javascript:history.back()" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </a>
+
+      <div id="detail-content">
+        <!-- Loading skeleton -->
+        <div class="artwork-detail-grid">
+          <div class="artwork-detail-media skeleton" style="min-height:420px;"></div>
+          <div class="artwork-detail-panel">
+            <div class="skeleton" style="height:36px;margin-bottom:12px;"></div>
+            <div class="skeleton" style="height:20px;width:60%;margin-bottom:28px;"></div>
+            <div class="skeleton" style="height:80px;margin-bottom:28px;"></div>
+            <div class="skeleton" style="height:48px;border-radius:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hire Panel -->
+  <div class="hire-panel-overlay" id="hire-panel-overlay">
+    <div class="hire-panel">
+      <div class="hire-panel-handle"></div>
+      <div class="hire-panel-header">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="hire-panel-title">Make an Offer to <span id="modal-artist-name">Artist</span></div>
+            <div class="hire-panel-sub" id="modal-artwork-ref">Submit your project details and bid price</div>
+          </div>
+          <button id="cancel-hire" style="background:none;border:none;cursor:pointer;padding:8px;color:var(--muted);" aria-label="Close">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <form id="hire-form">
+        <div class="hire-panel-body">
+          <!-- Left: Project Details -->
+          <div>
+            <div class="hire-section-label">Project Details</div>
+            <div class="form-group">
+              <label for="hire-title" style="font-weight:600;font-size:.875rem;display:block;margin-bottom:6px;">Project Title <span style="color:#e55">*</span></label>
+              <input id="hire-title" type="text" class="form-input" placeholder="e.g. Album cover design for my EP" required />
+            </div>
+            <div class="form-group">
+              <label for="hire-desc" style="font-weight:600;font-size:.875rem;display:block;margin-bottom:6px;">Description <span style="color:#e55">*</span></label>
+              <textarea id="hire-desc" class="form-input form-textarea" rows="5" placeholder="Describe your project in detail — style, mood, references, deliverables…" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="hire-deadline" style="font-weight:600;font-size:.875rem;display:block;margin-bottom:6px;">Deadline</label>
+              <input id="hire-deadline" type="date" class="form-input" />
+              <div style="font-size:.78rem;color:var(--muted);margin-top:4px;">Leave blank if flexible</div>
+            </div>
+          </div>
+
+          <!-- Right: Bid/Offer -->
+          <div>
+            <div class="hire-section-label">Your Offer</div>
+            <div class="bid-box">
+              <div class="bid-ref-row" id="bid-ref-row" style="display:none;">
+                <span class="bid-ref-label">Artist's listed price</span>
+                <span class="bid-ref-price" id="bid-ref-price">—</span>
+              </div>
+              <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;">Your bid (INR)</div>
+              <div class="bid-input-wrap">
+                <span class="bid-currency">₹</span>
+                <input type="number" id="hire-budget" class="bid-input" placeholder="0" min="1" step="0.01" />
+              </div>
+              <div class="bid-hint">Set your price — the artist can accept, decline, or negotiate.</div>
+            </div>
+
+            <div style="background:var(--secondary-bg);border-radius:12px;padding:16px;font-size:.85rem;color:var(--muted);line-height:1.6;">
+              <div style="font-weight:600;color:var(--text);margin-bottom:6px;">How it works</div>
+              <div>1. Submit your offer with project details</div>
+              <div>2. Artist receives a notification instantly</div>
+              <div>3. They can accept, counter, or decline</div>
+              <div>4. Once accepted, you collaborate directly</div>
+            </div>
+
+            <p id="hire-error" style="color:#e55353;margin-top:12px;font-size:.875rem;display:none;padding:10px;background:#fef2f2;border-radius:8px;"></p>
+          </div>
+        </div>
+
+        <div class="hire-panel-footer">
+          <button type="button" class="btn btn-outline" id="cancel-hire-2">Cancel</button>
+          <button type="submit" class="btn btn-accent" id="hire-submit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Offer to Artist
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+</body>
+</html>

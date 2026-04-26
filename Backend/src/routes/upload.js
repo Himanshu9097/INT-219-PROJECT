@@ -1,36 +1,15 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
-import fs from "fs";
-import os from "os";
 import { requireAuth } from "../middlewares/auth.js";
-import { uploadProfileImageToImageKit } from "../lib/imagekit.js";
+import { uploadToImageKit, uploadProfileImageToImageKit } from "../lib/imagekit.js";
 
 const router = Router();
 
-const uploadsDir = process.env.VERCEL
-  ? path.join(os.tmpdir(), "uploads")
-  : path.resolve(process.cwd(), "uploads");
-
-try {
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-} catch (err) {
-  // Silent fail - Vercel might still complain but /tmp should work
-}
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
-    cb(null, name);
-  },
-});
-
-const upload = multer({
-  storage,
+// All uploads go to memory first, then get streamed to ImageKit CDN.
+// This avoids storing files on disk (which is ephemeral on Render/Vercel).
+const artworkUpload = multer({
+  storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const allowed = [
@@ -66,17 +45,28 @@ function getMediaType(mimetype) {
   return "document";
 }
 
-router.post("/upload", requireAuth, upload.single("file"), (req, res) => {
+// POST /api/upload — artwork files (images, audio, video, docs)
+router.post("/upload", requireAuth, artworkUpload.single("file"), async (req, res) => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;
   }
 
-  const mediaType = getMediaType(req.file.mimetype);
-  const url = `/api/uploads/${req.file.filename}`;
-  res.json({ url, mediaType, filename: req.file.filename });
+  try {
+    const ext = path.extname(req.file.originalname);
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`;
+    const uploaded = await uploadToImageKit(req.file.buffer, fileName, "/artfolio/artworks");
+
+    const mediaType = getMediaType(req.file.mimetype);
+    // Return the permanent CDN URL — stored in MongoDB and served directly
+    res.json({ url: uploaded.url, mediaType, fileId: uploaded.fileId });
+  } catch (err) {
+    console.error("ImageKit artwork upload failed", err);
+    res.status(500).json({ error: "Failed to upload artwork file" });
+  }
 });
 
+// POST /api/upload/profile-image — profile images
 router.post(
   "/upload/profile-image",
   requireAuth,

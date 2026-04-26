@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Artfolio</title>
+  <script type="module" crossorigin src="/assets/register-YupVLcvH.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/nav-BC0pQlW7.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-D4Myoz-8.js">
+  <link rel="stylesheet" crossorigin href="/assets/nav-BBv-8K-G.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <main class="auth-page">
+    <div class="auth-card">
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Join the Artfolio creative community</p>
+
+      <div class="role-picker">
+        <div class="role-option active" data-role="artist" id="role-artist">
+          <div class="role-option-icon">🎨</div>
+          <div class="role-option-title">I'm an Artist</div>
+          <div class="role-option-desc">Showcase and sell your work</div>
+        </div>
+        <div class="role-option" data-role="client" id="role-client">
+          <div class="role-option-icon">💼</div>
+          <div class="role-option-title">I'm a Client</div>
+          <div class="role-option-desc">Hire talented artists</div>
+        </div>
+      </div>
+      <input type="hidden" id="selected-role" value="artist" />
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="name">Full name</label>
+          <input class="form-input" id="name" type="text" placeholder="Your name" required autocomplete="name" />
+          <div class="form-error hidden" id="name-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input class="form-input" id="email" type="email" placeholder="you@example.com" required autocomplete="email" />
+          <div class="form-error hidden" id="email-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" id="password" type="password" placeholder="At least 8 characters" required autocomplete="new-password" />
+          <div class="form-hint">Minimum 6 characters</div>
+          <div class="form-error hidden" id="pw-error"></div>
+        </div>
+        <div class="form-error hidden" id="form-error" style="margin-bottom:16px;padding:12px;background:#fef2f2;border-radius:8px;"></div>
+        <button type="submit" class="btn btn-primary w-full" id="submit-btn">Create account</button>
+      </form>
+
+      <div class="auth-footer">Already have an account? <a href="/login.html">Sign in</a></div>
+    </div>
+  </main>
+
+</body>
+</html>

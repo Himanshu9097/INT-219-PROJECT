@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artist Profile — Artfolio</title>
+  <script type="module" crossorigin src="/assets/profile-C7gBl6qz.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/nav-BC0pQlW7.js">
+  <link rel="modulepreload" crossorigin href="/assets/cards-zDbMPcTx.js">
+  <link rel="modulepreload" crossorigin href="/assets/toast-D4Myoz-8.js">
+  <link rel="stylesheet" crossorigin href="/assets/nav-BBv-8K-G.css">
+</head>
+<body>
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="profile-page" id="profile-page">
+    <div class="loading-wrap" id="loading"><div class="spinner"></div></div>
+    <div id="profile-content" style="display:none;">
+      <div class="profile-cover" id="profile-cover"></div>
+      <div class="profile-header">
+        <div class="profile-header-inner">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:var(--accent);background:var(--secondary-bg);"></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+              <h1 class="profile-name" id="profile-name"></h1>
+              <div class="profile-category" id="profile-category"></div>
+              <div id="profile-tagline" style="font-size:1rem;color:var(--foreground);font-weight:600;margin-bottom:12px;display:none;"></div>
+              <p class="profile-bio" id="profile-bio"></p>
+              <div class="profile-meta" id="profile-meta"></div>
+              <div class="profile-skills" id="profile-skills"></div>
+              <div id="profile-links" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;"></div>
+              <div id="profile-spotlight" style="display:none;margin-top:22px;"></div>
+            </div>
+            <div class="profile-actions">
+              <a href="/browse.html" class="btn btn-outline">Browse Artists</a>
+              <button class="btn btn-accent" id="hire-btn" style="display:none;">Hire Me</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+          <div>
+            <div class="section-label">Portfolio</div>
+            <h2 style="font-family:var(--font-serif);font-size:1.8rem;font-weight:700;">Works</h2>
+          </div>
+          <span id="works-count" style="color:var(--muted);font-size:.9rem;"></span>
+        </div>
+
+        <div class="filter-bar" id="type-filters">
+          <button class="filter-btn active" data-type="">All</button>
+          <button class="filter-btn" data-type="image">🖼 Visual</button>
+          <button class="filter-btn" data-type="audio">🎵 Music</button>
+          <button class="filter-btn" data-type="video">🎬 Video</button>
+          <button class="filter-btn" data-type="document">📄 Documents</button>
+        </div>
+
+        <div class="artwork-grid" id="works-grid">
+          <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="not-found" style="display:none;" class="empty-state" style="padding:120px 24px;">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">Artist not found</div>
+      <div class="empty-state-sub">This profile doesn't exist or has been removed.</div>
+      <a href="/browse.html" class="btn btn-primary" style="margin-top:24px;">Browse Artists</a>
+    </div>
+  </div>
+
+  <!-- Hire Modal -->
+  <div class="modal-overlay" id="hire-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Hire <span id="hire-artist-name"></span></div>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <form id="hire-form">
+        <div class="form-group">
+          <label class="form-label">Your project details</label>
+          <textarea class="form-input form-textarea" id="hire-message" placeholder="Describe what you need…" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Budget ($)</label>
+          <input class="form-input" id="hire-budget" type="number" min="0" placeholder="e.g. 500" />
+        </div>
+        <div class="form-error hidden" id="hire-error" style="margin-bottom:16px;padding:12px;background:#fef2f2;border-radius:8px;"></div>
+        <button type="submit" class="btn btn-accent w-full">Send Request</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
