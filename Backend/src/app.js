@@ -7,6 +7,7 @@ import fs from "fs";
 import os from "os";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
+import { connectMongo, isMongoConnected } from "./lib/mongodb.js";
 import "./models/User.js";
 import "./models/Artwork.js";
 import "./models/HireRequest.js";
@@ -37,6 +38,21 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api", async (req, res, next) => {
+  if (isMongoConnected()) {
+    next();
+    return;
+  }
+
+  try {
+    await connectMongo();
+    next();
+  } catch (err) {
+    logger.error({ err }, "Mongo connection unavailable");
+    res.status(503).json({ error: "Database temporarily unavailable" });
+  }
+});
 
 const uploadsDir = process.env.VERCEL
   ? path.join(os.tmpdir(), "uploads")

@@ -30,4 +30,8 @@ export async function connectMongo() {
   return connectPromise;
 }
 
+export function isMongoConnected() {
+  return mongoose.connection.readyState === 1;
+}
+
 export default mongoose;
