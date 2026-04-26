@@ -78,7 +78,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendPath = path.resolve(__dirname, "../../Frontend/artfolio/dist/public");
 if (fs.existsSync(frontendPath)) {
   app.use(express.static(frontendPath, { extensions: ['html'] }));
-  app.get("*", (req, res) => {
+  app.get(/^(.*)$/, (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 } else {
