@@ -5,6 +5,7 @@ import pinoHttp from "pino-http";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import { fileURLToPath } from "url";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
 import { connectMongo, isMongoConnected } from "./lib/mongodb.js";
@@ -72,8 +73,19 @@ app.use("/api/uploads", express.static(uploadsDir));
 app.use("/api", router);
 app.use("/", router);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Artfolio API is running", version: "1.0.0" });
-});
+// Serve static frontend files if they exist (for Render monolithic deployment)
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const frontendPath = path.resolve(__dirname, "../../Frontend/artfolio/dist/public");
+if (fs.existsSync(frontendPath)) {
+  app.use(express.static(frontendPath, { extensions: ['html'] }));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
+  });
+} else {
+  // Fallback if frontend is not built
+  app.get("/", (req, res) => {
+    res.json({ message: "Artfolio API is running", version: "1.0.0" });
+  });
+}
 
 export default app;

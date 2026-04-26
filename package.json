@@ -2,8 +2,10 @@
   "name": "artfolio-vercel-root",
   "private": true,
   "type": "module",
-  "main": "server.js",
+  "main": "Backend/src/server.js",
   "scripts": {
-    "build": "npm --prefix Frontend/artfolio install && npm --prefix Frontend/artfolio run build && rm -rf public && mkdir -p public && cp -R Frontend/artfolio/dist/public/. public/"
+    "postinstall": "npm --prefix Frontend/artfolio install && npm --prefix Frontend/artfolio run build && npm --prefix Backend install && npm --prefix Backend run build",
+    "build": "npm run postinstall && rm -rf public && mkdir -p public && cp -R Frontend/artfolio/dist/public/. public/",
+    "start": "npm start --prefix Backend"
   }
 }

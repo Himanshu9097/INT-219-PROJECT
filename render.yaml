@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: artfolio
+    env: node
+    buildCommand: npm install --prefix Frontend/artfolio && npm run build --prefix Frontend/artfolio && npm install --prefix Backend && npm run build --prefix Backend
+    startCommand: npm start --prefix Backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
