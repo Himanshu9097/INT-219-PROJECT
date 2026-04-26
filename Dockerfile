@@ -1,27 +1,32 @@
-FROM node:20-alpine AS base
-WORKDIR /app
-
-# Install backend deps
-COPY Backend/package*.json ./Backend/
-RUN cd Backend && npm ci
-
-# Copy backend source
-COPY Backend ./Backend
-
-# Build backend
-WORKDIR /app/Backend
-ENV NODE_ENV=production
+# Stage 1: Build the frontend
+FROM node:20-alpine AS frontend-builder
+WORKDIR /app/Frontend/artfolio
+COPY Frontend/artfolio/package*.json ./
+RUN npm ci
+COPY Frontend/artfolio/ ./
 RUN npm run build
 
-# Runtime image
+# Stage 2: Build the backend
+FROM node:20-alpine AS backend-builder
+WORKDIR /app/Backend
+COPY Backend/package*.json ./
+RUN npm ci
+COPY Backend/ ./
+RUN npm run build
+
+# Stage 3: Create the runtime image
 FROM node:20-alpine
 WORKDIR /app
 
-# Only copy the built backend and minimal files
-COPY --from=base /app/Backend/dist ./dist
-COPY --from=base /app/Backend/package*.json ./
-COPY --from=base /app/Backend/.env.example ./ ./
+# Copy the built backend
+COPY --from=backend-builder /app/Backend/dist /app/Backend/dist
+COPY --from=backend-builder /app/Backend/package*.json /app/Backend/
 
+# Copy the built frontend
+COPY --from=frontend-builder /app/Frontend/artfolio/dist/public /app/Frontend/artfolio/dist/public
+
+# Install production dependencies for the backend
+WORKDIR /app/Backend
 RUN npm ci --omit=dev
 
 ENV NODE_ENV=production \
