@@ -10,3 +10,5 @@ Backend/dist/
 Frontend/artfolio/.env
 Frontend/artfolio/node_modules/
 Frontend/artfolio/dist/
+.vercel
+.env*.local

@@ -1,0 +1,17 @@
+{
+  "name": "artfolio-api-function",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2",
+    "dotenv": "^16.4.7",
+    "express": "^5",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.3",
+    "multer": "^2.1.1",
+    "pino": "^9",
+    "pino-http": "^10"
+  }
+}

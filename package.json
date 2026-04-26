@@ -1,0 +1,8 @@
+{
+  "name": "artfolio-vercel-root",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm --prefix Frontend/artfolio install && npm --prefix Frontend/artfolio run build && rm -rf public && mkdir -p public && cp -R Frontend/artfolio/dist/public/. public/"
+  }
+}

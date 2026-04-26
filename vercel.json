@@ -2,18 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "Backend/src/server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "Backend/src/server.js"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "public"
+      }
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "src": "api/[...path].mjs",
+      "use": "@vercel/node"
     }
   ]
 }
