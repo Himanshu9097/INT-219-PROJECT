@@ -19,4 +19,4 @@ const HireRequestSchema = new Schema(
   { timestamps: { createdAt: "createdAt", updatedAt: false } },
 );
 
-export const HireRequest = mongoose.model("HireRequest", HireRequestSchema);
+export const HireRequest = mongoose.models.HireRequest || mongoose.model("HireRequest", HireRequestSchema);

@@ -2,20 +2,8 @@
   "version": 2,
   "routes": [
     {
-      "src": "/api/healthz",
-      "dest": "/api/healthz.mjs"
-    },
-    {
-      "src": "/api/auth/login",
-      "dest": "/api/auth/login.mjs"
-    },
-    {
-      "src": "/api/auth/register",
-      "dest": "/api/auth/register.mjs"
-    },
-    {
-      "src": "/api/auth/me",
-      "dest": "/api/auth/me.mjs"
+      "src": "/api/(.*)",
+      "dest": "/api/[...path].mjs"
     }
   ],
   "builds": [
@@ -28,22 +16,6 @@
     },
     {
       "src": "api/[...path].mjs",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/auth/login.mjs",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/auth/register.mjs",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/auth/me.mjs",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/healthz.mjs",
       "use": "@vercel/node"
     }
   ]

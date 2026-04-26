@@ -20,4 +20,4 @@ const ArtworkSchema = new Schema(
   { timestamps: { createdAt: "createdAt", updatedAt: false } },
 );
 
-export const Artwork = mongoose.model("Artwork", ArtworkSchema);
+export const Artwork = mongoose.models.Artwork || mongoose.model("Artwork", ArtworkSchema);

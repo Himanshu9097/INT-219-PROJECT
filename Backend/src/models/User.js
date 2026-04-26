@@ -38,4 +38,4 @@ const UserSchema = new Schema(
   { timestamps: { createdAt: "createdAt", updatedAt: false } },
 );
 
-export const User = mongoose.model("User", UserSchema);
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);
