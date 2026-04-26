@@ -35,7 +35,7 @@ Backend env file: `Backend/.env`
 
 Required backend variables:
 - `PORT`
-- `MONGO_URI`
+- `MONGO_URI` or `MONGODB_URI`
 - `SESSION_SECRET`
 - `IMAGEKIT_PUBLIC_KEY`
 - `IMAGEKIT_PRIVATE_KEY`
@@ -43,7 +43,7 @@ Required backend variables:
 Frontend env file: `Frontend/artfolio/.env`
 
 Frontend variables:
-- `PORT`
+- `VITE_API_BASE_URL` for a separate backend deployment
 - `BASE_PATH`
 - `API_PROXY_TARGET`
 
@@ -52,4 +52,3 @@ Frontend variables:
 lsof -nP -iTCP:5001 -sTCP:LISTEN
 kill <PID>
 npm run dev
-

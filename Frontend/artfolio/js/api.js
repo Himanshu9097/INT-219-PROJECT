@@ -1,4 +1,17 @@
-const API = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? '/api';
+function resolveApiBase() {
+  const configured = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return `${window.location.origin}/api`;
+  }
+
+  return "/api";
+}
+
+const API = resolveApiBase();
 
 function getToken() {
   return localStorage.getItem('artfolio_token');

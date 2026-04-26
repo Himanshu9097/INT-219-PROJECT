@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import { logger } from "./logger.js";
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
 let connectPromise;
-
-if (!MONGO_URI) {
-  throw new Error("MONGO_URI environment variable is not set");
-}
 
 export async function connectMongo() {
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
+  }
+
+  if (!MONGO_URI) {
+    throw new Error("MONGO_URI or MONGODB_URI environment variable is not set");
   }
 
   if (!connectPromise) {
