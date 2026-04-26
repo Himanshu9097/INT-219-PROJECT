@@ -1,11 +1,5 @@
 {
   "version": 2,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/[...path].mjs"
-    }
-  ],
   "builds": [
     {
       "src": "package.json",
