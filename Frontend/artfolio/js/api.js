@@ -34,8 +34,18 @@ async function request(method, path, body, isFormData = false) {
   if (body && isFormData) opts.body = body;
   const res = await fetch(API + path, opts);
   if (!res.ok) {
-    let msg = res.statusText;
-    try { const d = await res.json(); msg = d.error || msg; } catch {}
+    let msg = res.statusText || `Request failed with status ${res.status}`;
+    try {
+      const text = await res.text();
+      if (text) {
+        try {
+          const d = JSON.parse(text);
+          msg = d.error || d.message || msg;
+        } catch {
+          msg = text;
+        }
+      }
+    } catch {}
     throw new Error(msg);
   }
   if (res.status === 204) return null;
