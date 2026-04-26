@@ -67,7 +67,10 @@ try {
 }
 app.use("/api/uploads", express.static(uploadsDir));
 
+// Keep both prefixes so the app works whether Vercel forwards /api/* directly
+// or exposes the backend routes at the site root.
 app.use("/api", router);
+app.use("/", router);
 
 app.get("/", (req, res) => {
   res.json({ message: "Artfolio API is running", version: "1.0.0" });

@@ -12,6 +12,7 @@ function resolveApiBase() {
 }
 
 const API = resolveApiBase();
+const FALLBACK_API = typeof window !== "undefined" ? window.location.origin : "";
 
 function getToken() {
   return localStorage.getItem('artfolio_token');
@@ -32,7 +33,10 @@ async function request(method, path, body, isFormData = false) {
   }
   if (body && !isFormData) opts.body = JSON.stringify(body);
   if (body && isFormData) opts.body = body;
-  const res = await fetch(API + path, opts);
+  let res = await fetch(API + path, opts);
+  if (res.status === 404 && API.endsWith("/api") && FALLBACK_API) {
+    res = await fetch(FALLBACK_API + path, opts);
+  }
   if (!res.ok) {
     let msg = res.statusText || `Request failed with status ${res.status}`;
     try {
